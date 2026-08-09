@@ -1,0 +1,32 @@
+/* =========================================================================
+   theme.css — Jeton de marque du Collège Catholique Saint Charles Borromée
+   ---------------------------------------------------------------------
+   À importer UNE SEULE FOIS dans ton fichier CSS global, juste après
+   l'import Tailwind :
+
+     @import "tailwindcss";
+     @import "./theme.css";
+
+   Tailwind v4 génère automatiquement les classes utilitaires à partir des
+   variables --color-* et --font-* déclarées dans @theme (ex: bg-navy,
+   text-gold, font-display). Pas besoin de tailwind.config.js.
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+@theme {
+  /* Palette — bleu roi institutionnel + or bronze (sceau, cordon d'honneur) */
+  --color-navy: #1a4d8f;       /* bleu principal — plus proche du bleu roi du collège */
+  --color-navy-deep: #0f3466;  /* bleu profond — fonds sombres, footer, overlays */
+  --color-gold: #c9972e;       /* or bronze — accents, CTA, sceau */
+  --color-gold-soft: #e4c374;  /* or clair — hover, détails fins */
+  --color-paper: #f6f2e7;      /* fond papier chaud — alterne avec le blanc */
+  --color-navy-mist: #e8eefa;  /* bleu très pâle — alterne avec le papier et le blanc */
+  --color-ink: #1b2430;        /* texte principal, presque noir chaud */
+  --color-ink-soft: #4a5568;   /* texte secondaire */
+
+  /* Typographie — 3 rôles distincts */
+  --font-display: "Fraunces", "Georgia", serif;       /* titres — caractère */
+  --font-body: "Inter", "Helvetica Neue", sans-serif;  /* texte courant */
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace; /* eyebrows, chiffres, labels */
+}
