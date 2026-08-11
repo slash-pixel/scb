@@ -1,6 +1,7 @@
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
+
+import AppLayout from "./components/navket";
 import About from "./components/About";
+import InteractiveHub from"./components/sectio";
 import Filieres from "./components/Filieres";
 import Stats from "./components/Stats";
 import Gallery from "./components/Gallery";
@@ -13,9 +14,9 @@ import Footer from "./components/Footer";
 export default function App() {
   return (
     <div className="font-body text-ink antialiased">
-      <Navbar />
-      <Hero />
+      <AppLayout />
       <About />
+      <InteractiveHub />
       <Filieres />
       <Stats />
       <Gallery />

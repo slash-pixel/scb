@@ -35,8 +35,10 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 bg-navy-deep/95 backdrop-blur-sm border-b border-gold/20 transition-shadow duration-500 ${scrolled ? "shadow-lg shadow-black/20" : "shadow-none"
-        }`}
+      /* CORRECTION ICI : Remplacement de inset-x-0 par w-full */
+      className={`w-full z-50 bg-navy-deep/95 backdrop-blur-sm border-b border-gold/20 transition-shadow duration-500 ${
+        scrolled ? "shadow-lg shadow-black/20" : "shadow-none"
+      }`}
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-10 flex items-center justify-between h-20">
         <a
