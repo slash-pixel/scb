@@ -8,3 +8,20 @@ html {
 body {
   background-color: #ffffff;
 }
+
+/* --- MASQUER L'INTERFACE PAR DÉFAUT DE GOOGLE TRANSLATE --- */
+.VIpgJd-ZVi9od-ORHb-OEVmcd {
+  display: none !important;
+}
+.goog-te-banner-frame {
+  display: none !important;
+}
+body {
+  top: 0 !important;
+}
+.goog-tooltip {
+  display: none !important;
+}
+#google_translate_element {
+  display: none !important;
+}
