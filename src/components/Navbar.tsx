@@ -1,16 +1,17 @@
 import GoogleTranslate from "./LanguageSwitcher";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
+import { UserCircle, Menu, X } from "lucide-react"; 
 import Crest from "./Crest";
 
 const LIENS = [
-  { label: "Accueil", href: "#accueil" },
-  { label: "À propos", href: "#a-propos" },
-  { label: "Filières", href: "#filieres" },
-  { label: "Galerie", href: "#galerie" },
-  { label: "FAQ", href: "#faq" },
-  { label: "Contact", href: "#contact" },
+  { label: "Accueil", href: "/#accueil" },
+  { label: "À propos", href: "/#a-propos" },
+  { label: "Filières", href: "/#filieres" },
+  { label: "Galerie", href: "/#galerie" },
+  { label: "FAQ", href: "/#faq" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
@@ -41,7 +42,7 @@ export default function Navbar() {
         
         {/* LOGO - À GAUCHE */}
         <a
-          href="#accueil"
+          href="/#accueil"
           className="flex items-center gap-2.5 sm:gap-3 group min-w-0 transition-opacity duration-300 hover:opacity-80"
         >
           <Crest className="h-8 w-8 sm:h-10 sm:w-10 shrink-0" />
@@ -55,7 +56,7 @@ export default function Navbar() {
           </span>
         </a>
 
-        {/* NOUVEAU CONTENEUR - À DROITE (Nav + Traduction + Burger) */}
+        {/* CONTENEUR - À DROITE (Nav + Traduction + Burger) */}
         <div className="flex items-center gap-3 sm:gap-5">
           
           {/* Navigation desktop (Cachée sur mobile) */}
@@ -79,17 +80,17 @@ export default function Navbar() {
               </motion.a>
             ))}
 
-            <motion.a
-              href="#contact"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="ml-3 rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-navy-deep shadow-lg shadow-gold/0 transition-all duration-300 hover:bg-gold-soft hover:shadow-gold/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-navy-deep"
+            {/* BOUTON : ESPACE PARENT (Desktop) */}
+            <Link
+              to="/espace-parent"
+              className="ml-3 flex items-center gap-2 rounded-full border border-gold px-4 py-2 text-sm font-semibold text-gold transition-all duration-300 hover:bg-gold hover:text-navy-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
             >
-              Nous rejoindre
-            </motion.a>
+              <UserCircle className="h-4 w-4" />
+              <span>Espace Parent</span>
+            </Link>
           </nav>
 
-          {/* BOUTON DE TRADUCTION - Bien aligné avec le reste ! */}
+          {/* BOUTON DE TRADUCTION */}
           <GoogleTranslate />
 
           {/* Bouton menu mobile */}
@@ -136,14 +137,15 @@ export default function Navbar() {
                 </motion.a>
               ))}
 
-              <motion.a
-                href="#contact"
+              {/* BOUTON : ESPACE PARENT (Mobile) */}
+              <Link
+                to="/espace-parent"
                 onClick={() => setOpen(false)}
-                whileTap={{ scale: 0.95 }}
-                className="mt-6 rounded-full bg-gold px-5 py-3 text-center text-sm font-semibold text-navy-deep transition-colors hover:bg-gold-soft"
+                className="mt-6 flex items-center justify-center gap-2 rounded-full border border-gold px-5 py-3 text-center text-sm font-semibold text-gold transition-colors hover:bg-gold hover:text-navy-deep"
               >
-                Nous rejoindre
-              </motion.a>
+                <UserCircle className="h-5 w-5" />
+                <span>Espace Parent</span>
+              </Link>
             </div>
           </motion.nav>
         )}

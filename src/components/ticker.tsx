@@ -13,7 +13,7 @@ const ANNONCES = [
   },
   {
     id: "inscriptions",
-    text: "Inscriptions 2025–2026 ouvertes",
+    text: "Inscriptions 2026–2027 ouvertes",
     badge: "Places limitées",
     icon: GraduationCap,
     category: "Inscriptions",
