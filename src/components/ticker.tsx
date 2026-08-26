@@ -6,7 +6,7 @@ import { Award, GraduationCap, Trophy, Sparkles } from "lucide-react";
 const ANNONCES = [
   {
     id: "bepc",
-    text: "Résultats BEPC 2024 : 98% de réussite",
+    text: "Résultats BEPC 2025 : 98% de réussite",
     badge: "Excellence",
     icon: Award,
     category: "Résultats",

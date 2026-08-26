@@ -20,7 +20,7 @@ const FAQS: FaqItem[] = [
   {
     question: "Comment inscrire mon enfant au collège ?",
     reponse:
-      "Les inscriptions se font directement au secrétariat du collège, généralement entre juillet et septembre pour la rentrée. Selon la classe visée, un test de niveau ou un entretien peut être organisé. Nous te conseillons de prendre rendez-vous au préalable via la section Contact ci-dessous.",
+      "Les inscriptions se font directement au secrétariat du collège, elles débutent généralement au lendemain de la remise des bulletins . Selon la classe visée, un test de niveau ou un entretien peut être organisé. Nous te conseillons de prendre rendez-vous au préalable via la section Contact ci-dessous.",
   },
   {
     question: "Quels documents sont nécessaires pour le dossier d'inscription ?",
@@ -49,7 +49,7 @@ const FAQS: FaqItem[] = [
   },
   {
     question:
-      "Quand ont lieu les examens nationaux (BEPC, CAP, Probatoire, Baccalauréat) ?",
+      "Quand ont lieu les examens offielles (BEPC, Probatoire, Baccalauréat) ?",
     reponse:
       "Ces examens sont organisés chaque année par le MINESEC et l'Office du Baccalauréat du Cameroun (OBC), généralement entre mai et juillet. À titre de référence, voici le calendrier de la session 2026 :",
     tableau: {
@@ -58,7 +58,6 @@ const FAQS: FaqItem[] = [
         ["Baccalauréat", "25 – 30 mai 2026", "Mi-juillet 2026"],
         ["Probatoire", "8 – 12 juin 2026", "Fin juillet 2026"],
         ["BEPC", "2 – 5 juin 2026", "À partir du 6 juillet 2026"],
-        ["CAP", "2 – 5 juin 2026", "À partir du 6 juillet 2026"],
       ],
       note:
         "Calendrier officiel republié chaque année par le MINESEC et l'OBC — vérifie les dates exactes de la session en cours auprès du secrétariat ou sur officedubac.cm.",
@@ -71,9 +70,9 @@ const FAQS: FaqItem[] = [
     tableau: {
       colonnes: ["Période", "Dates"],
       lignes: [
-        ["Rentrée scolaire", "Lundi 8 septembre 2025"],
-        ["Vacances de Noël", "19 déc. 2025 → 6 janv. 2026"],
-        ["Vacances de Pâques", "2 avril → 20 avril 2026"],
+        ["Rentrée scolaire", "Lundi 3 septembre 2026"],
+        ["congés de Noël", "19 déc. 2025 → 6 janv. 2026"],
+        ["congés de Pâques", "2 avril → 20 avril 2026"],
         ["Fin d'année scolaire", "Vendredi 31 juillet 2026"],
       ],
       note:

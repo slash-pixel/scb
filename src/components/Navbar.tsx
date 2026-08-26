@@ -47,7 +47,7 @@ export default function Navbar() {
         >
           <Crest className="h-8 w-8 sm:h-10 sm:w-10 shrink-0" />
           <span className="font-display text-white leading-tight min-w-0">
-            <span className="block text-[0.55rem] sm:text-[0.65rem] tracking-[0.12em] sm:tracking-[0.2em] uppercase text-gold-soft font-mono truncate">
+            <span className="block text-[0.55rem] sm:text-[0.65rem] tracking-[0.12em] sm:tracking-[0.2em] uppercase font-mono truncate">
               Collège Catholique
             </span>
             <span className="block text-sm sm:text-lg font-semibold truncate">

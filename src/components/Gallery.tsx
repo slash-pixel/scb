@@ -29,8 +29,9 @@ export default function Gallery() {
             <ScrollReveal
               key={photo.src}
               delay={0.08 * i}
-              className={`group relative overflow-hidden rounded-xl md:rounded-2xl ${photo.grand ? "col-span-2 row-span-2" : ""
-                }`}
+              className={`group relative overflow-hidden rounded-xl md:rounded-2xl ${
+                photo.grand ? "col-span-2 row-span-2" : ""
+              }`}
             >
               <img
                 src={photo.src}
@@ -46,14 +47,28 @@ export default function Gallery() {
           ))}
         </div>
 
-        {/* --- NOUVEAU BOUTON AJOUTÉ ICI --- */}
+        {/* Bouton vers la galerie complète */}
         <ScrollReveal delay={0.4} className="mt-12 flex justify-center">
           <Link
             to="/galerie-interactive"
             className="group relative inline-flex items-center gap-2 rounded-full bg-navy-deep px-8 py-3.5 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-gold hover:text-navy-deep hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
           >
             <span>Voir toute la galerie</span>
-            {/* Ton SVG ici */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            >
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
           </Link>
         </ScrollReveal>
       </div>

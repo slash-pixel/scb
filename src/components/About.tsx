@@ -1,14 +1,14 @@
-import { GraduationCap, HeartHandshake, Users } from "lucide-react";
-import { motion } from "motion/react"; // Ajout de Framer Motion
+import { Link } from "react-router-dom";
+import { ArrowRight, GraduationCap, HeartHandshake, Users } from "lucide-react";
+import { motion } from "motion/react";
 import ScrollReveal from "./ScrollReveal";
-import Crest from "./Crest";
 
 const VALEURS = [
   {
     icon: GraduationCap,
     titre: "Excellence académique",
     texte:
-      "Un enseignement général et technique exigeant, porté par des programmes rigoureux et un suivi individuel des résultats.",
+      "Un enseignement général exigeant, porté par des programmes rigoureux et un suivi individuel des résultats.",
   },
   {
     icon: HeartHandshake,
@@ -27,13 +27,15 @@ const VALEURS = [
 export default function About() {
   return (
     <section id="a-propos" className="relative bg-navy-mist py-24 md:py-32 overflow-hidden">
-      {/* Sceau en filigrane */}
-      <Crest
-        filled={false}
-        className="absolute -right-16 -top-16 h-80 w-80 opacity-[0.06] pointer-events-none"
-      />
+      {/* Mot BORROMÉE en filigrane centré verticalement et réduit de 10px */}
+      <span
+        aria-hidden="true"
+        className="absolute -right-10 top-1/2 -translate-y-1/2 font-display text-[102px] md:text-[198px] font-black uppercase text-navy opacity-[0.04] pointer-events-none select-none tracking-widest leading-none z-0"
+      >
+        BORROMÉE
+      </span>
 
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-10 z-10">
         <div className="grid lg:grid-cols-12 gap-16 items-start">
           
           {/* Colonne Texte */}
@@ -51,6 +53,17 @@ export default function About() {
                 des adultes compétents, intègres et engagés — fidèles à sa
                 double vocation d'enseignement général et technique.
               </p>
+
+              {/* BOUTON MOT DE BIENVENUE */}
+              <div className="mt-8">
+                <Link
+                  to="/mot-du-principal"
+                  className="group inline-flex items-center gap-3 rounded-full bg-navy px-6 py-3.5 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:bg-gold hover:text-navy-deep hover:shadow-xl hover:shadow-gold/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                >
+                  <span>Mot de Bienvenue</span>
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+              </div>
             </ScrollReveal>
           </div>
 

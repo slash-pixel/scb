@@ -28,10 +28,10 @@ const TABS_DATA = [
     iconBox: "bg-amber-200/60 text-amber-900 group-hover:bg-amber-900 group-hover:text-amber-200",
     ctaColor: "text-amber-900 group-hover:text-amber-700",
     cards: [
-      { id: "h1", title: "Horaires", desc: "Lundi–Vendredi : 7h30–16h00\nSamedi : 7h30–12h30\nBureaux sur rendez-vous", cta: "Voir les détails", icon: Clock },
-      { id: "h2", title: "Cantine Scolaire", desc: "Repas équilibrés servis tous les jours. Menu hebdomadaire publié chaque vendredi. Service de 12h00 à 13h30.", cta: "Voir les menus", icon: Utensils },
-      { id: "h3", title: "Transport Scolaire", desc: "Service de bus couvrant les principaux quartiers de Douala. Ramassage dès 6h45. Tarifs sur demande.", cta: "Voir les trajets", icon: Bus },
-      { id: "h4", title: "Localisation", desc: "Akwa, Douala · Cameroun\nPrès du Rond-point Deido\nParking visiteurs disponible", cta: "Itinéraires", icon: MapPin },
+      { id: "h1", title: "Horaires administrattive et cours ", desc: "Lundi–Vendredi : 7h30–17h30\n samedi  : 7h30–12h30\n uniquement Bureaux sur rendez-vous", cta: "Voir les détails", icon: Clock },
+      { id: "h2", title: "Cantine Scolaire", desc: "Repas équilibrés servis tous les jours. Service de 10h00 à 10h30 puis de 12h30 à 13h00.", cta: "Voir les menus", icon: Utensils },
+      { id: "h3", title: "Transport Scolaire", desc: "pas encore actif mais en cours de réalisation", icon: Bus },
+      { id: "h4", title: "Localisation", desc: "ndogsimbi, Douala · Cameroun\nPrès de l'institut Panafricain pour le Développement\nParking visiteurs disponible", cta: "Itinéraires", icon: MapPin },
     ],
   },
   {
@@ -50,8 +50,8 @@ const TABS_DATA = [
     cards: [
       { id: "v1", title: "Corps Enseignant", desc: "85 professeurs qualifiés et passionnés. Un accompagnement personnalisé pour chaque élève, de la 6ème à la Terminale.", cta: "Découvrir l'équipe", icon: Users },
       { id: "v2", title: "Règlement Intérieur", desc: "Un environnement bienveillant mais structuré pour favoriser l'épanouissement de tous. Consultez le règlement en vigueur.", cta: "Télécharger", icon: BookOpenCheck },
-      { id: "v3", title: "Filières & Options", desc: "Séries Scientifiques, Littéraires et Économiques. Options : Anglais renforcé, Arts plastiques, Informatique.", cta: "Explorer les filières", icon: Compass },
-      { id: "v4", title: "Pastorale Scolaire", desc: "Messes mensuelles, retraites spirituelles, groupes de prière. La foi au cœur de notre projet éducatif.", cta: "Programme pastoral", icon: Heart },
+      { id: "v3", title: "Filières & Options", desc: "Séries Scientifiques, Littéraires. Options : Anglais renforcé, Arts plastiques, Informatique.", cta: "Explorer les filières", icon: Compass },
+      { id: "v4", title: "Pastorale Scolaire", desc: "Messes journalières, homonerie scolaire, mouvement d'action catholique, cathéchese: au terme de trois ans d'initiations les étudiants recoivent les sacrements . La foi au cœur de notre projet éducatif.", cta: "Programme pastoral", icon: Heart },
     ],
   },
   {
