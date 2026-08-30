@@ -23,6 +23,12 @@ export default function GalleryPage() {
   // Gestion de l'état d'ouverture de la Lightbox (-1 = fermé, >= 0 = index de l'image ouverte)
   const [index, setIndex] = useState<number>(-1);
 
+  // Fonction utilitaire pour formater correctement l'URL (Cloudinary vs local)
+  const getImageUrl = (url: string) => {
+    if (!url) return "";
+    return url.startsWith("http") ? url : `https://scbapi.onrender.com${url}`;
+  };
+
   // Utilisation de useEffect pour aller chercher les images au chargement de la page
   useEffect(() => {
     const fetchImages = async () => {
@@ -36,7 +42,7 @@ export default function GalleryPage() {
       } catch (error) {
         console.error("Erreur Fetch:", error);
       } finally {
-        setIsLoading(false); // Le chargement est terminé, qu'il y ait eu une erreur ou non
+        setIsLoading(false); // Le chargement est terminé
       }
     };
 
@@ -91,11 +97,12 @@ export default function GalleryPage() {
                 className="aspect-square overflow-hidden rounded-xl bg-gray-200 cursor-pointer group relative"
               >
                 {/* 
-                  IMPORTANT: Si l'API renvoie juste "/uploads/nom.jpg", 
-                  il faut y ajouter le domaine de l'API pour que l'image s'affiche.
+                  Gestion automatique : 
+                  - Si c'est Cloudinary (http...), on prend l'URL directe.
+                  - Si c'est un ancien fichier local (/uploads/...), on ajoute l'URL du backend.
                 */}
                 <img 
-                  src={`https://scbapi.onrender.com${photo.url}`} 
+                  src={getImageUrl(photo.url)} 
                   alt={photo.title} 
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -120,9 +127,9 @@ export default function GalleryPage() {
         open={index >= 0}
         index={index}
         close={() => setIndex(-1)}
-        // Formatage des images pour la Lightbox (ajout du domaine de l'API)
+        // Formatage dynamique des URLs pour les slides Lightbox
         slides={images.map((p) => ({ 
-          src: `https://scbapi.onrender.com${p.url}`, 
+          src: getImageUrl(p.url), 
           alt: p.title 
         }))}
       />

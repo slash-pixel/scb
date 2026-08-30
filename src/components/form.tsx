@@ -25,6 +25,12 @@ export default function Form() {
 
   const navigate = useNavigate();
 
+  // Fonction utilitaire pour formater correctement l'URL (Cloudinary vs local)
+  const getImageUrl = (url: string) => {
+    if (!url) return "";
+    return url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
+  };
+
   // Fonction de rechargement réutilisable après un ajout
   const fetchImages = useCallback(async () => {
     try {
@@ -274,8 +280,9 @@ export default function Form() {
                   key={img.id}
                   className="flex flex-col overflow-hidden rounded-xl border border-navy/10 bg-paper transition hover:shadow-md"
                 >
+                  {/* Utilisation de getImageUrl(img.url) */}
                   <img
-                    src={`${API_BASE_URL}${img.url}`}
+                    src={getImageUrl(img.url)}
                     alt={img.title}
                     className="h-40 w-full object-cover"
                   />
