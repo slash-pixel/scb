@@ -15,6 +15,8 @@ interface APIImage {
   createdAt: string;
 }
 
+const API_BASE_URL = "https://scbapi.onrender.com";
+
 export default function GalleryPage() {
   // État pour stocker les images venant de l'API
   const [images, setImages] = useState<APIImage[]>([]);
@@ -23,17 +25,35 @@ export default function GalleryPage() {
   // Gestion de l'état d'ouverture de la Lightbox (-1 = fermé, >= 0 = index de l'image ouverte)
   const [index, setIndex] = useState<number>(-1);
 
-  // Fonction utilitaire pour formater correctement l'URL (Cloudinary vs local)
+  // Fonction utilitaire robuste pour formater correctement l'URL (Cloudinary vs local)
   const getImageUrl = (url: string) => {
     if (!url) return "";
-    return url.startsWith("http") ? url : `https://scbapi.onrender.com${url}`;
+
+    // 1. URL standard absolue HTTP / HTTPS
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    }
+
+    // 2. Erreur de formatage courante (ex: "https//res.cloudinary.com/...")
+    if (url.startsWith("https//") || url.startsWith("http//")) {
+      return url.replace(/^https?\/\//, "https://");
+    }
+
+    // 3. Domaine Cloudinary direct sans protocole (ex: "res.cloudinary.com/...")
+    if (url.startsWith("res.cloudinary.com") || url.startsWith("//res.cloudinary.com")) {
+      return `https://${url.replace(/^\/\//, "")}`;
+    }
+
+    // 4. Chemin relatif backend (ex: "/uploads/image.jpg")
+    const cleanPath = url.startsWith("/") ? url : `/${url}`;
+    return `${API_BASE_URL}${cleanPath}`;
   };
 
   // Utilisation de useEffect pour aller chercher les images au chargement de la page
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const response = await fetch("https://scbapi.onrender.com/api/images");
+        const response = await fetch(`${API_BASE_URL}/api/images`);
         if (!response.ok) {
           throw new Error("Erreur lors de la récupération des images");
         }
@@ -96,11 +116,6 @@ export default function GalleryPage() {
                 onClick={() => setIndex(i)}
                 className="aspect-square overflow-hidden rounded-xl bg-gray-200 cursor-pointer group relative"
               >
-                {/* 
-                  Gestion automatique : 
-                  - Si c'est Cloudinary (http...), on prend l'URL directe.
-                  - Si c'est un ancien fichier local (/uploads/...), on ajoute l'URL du backend.
-                */}
                 <img 
                   src={getImageUrl(photo.url)} 
                   alt={photo.title} 

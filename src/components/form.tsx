@@ -25,10 +25,28 @@ export default function Form() {
 
   const navigate = useNavigate();
 
-  // Fonction utilitaire pour formater correctement l'URL (Cloudinary vs local)
+  // Fonction utilitaire robuste pour formater correctement l'URL (Cloudinary vs local)
   const getImageUrl = (url: string) => {
     if (!url) return "";
-    return url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
+
+    // 1. URL standard absolue HTTP / HTTPS
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    }
+
+    // 2. Erreur de formatage courante (ex: "https//res.cloudinary.com/...")
+    if (url.startsWith("https//") || url.startsWith("http//")) {
+      return url.replace(/^https?\/\//, "https://");
+    }
+
+    // 3. Domaine Cloudinary direct sans protocole (ex: "res.cloudinary.com/...")
+    if (url.startsWith("res.cloudinary.com") || url.startsWith("//res.cloudinary.com")) {
+      return `https://${url.replace(/^\/\//, "")}`;
+    }
+
+    // 4. Chemin relatif backend (ex: "/uploads/image.jpg")
+    const cleanPath = url.startsWith("/") ? url : `/${url}`;
+    return `${API_BASE_URL}${cleanPath}`;
   };
 
   // Fonction de rechargement réutilisable après un ajout
@@ -280,7 +298,6 @@ export default function Form() {
                   key={img.id}
                   className="flex flex-col overflow-hidden rounded-xl border border-navy/10 bg-paper transition hover:shadow-md"
                 >
-                  {/* Utilisation de getImageUrl(img.url) */}
                   <img
                     src={getImageUrl(img.url)}
                     alt={img.title}
