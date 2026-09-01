@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { UserCircle, Menu, X } from "lucide-react"; 
-import Crest from "./Crest";
+
+// Si votre logo.jpg est placé dans le dossier src/assets/, décommentez la ligne ci-dessous :
+// import logoImg from "../assets/logo.jpg";
 
 const LIENS = [
   { label: "Accueil", href: "/#accueil" },
@@ -45,7 +47,13 @@ export default function Navbar() {
           href="/#accueil"
           className="flex items-center gap-2.5 sm:gap-3 group min-w-0 transition-opacity duration-300 hover:opacity-80"
         >
-          <Crest className="h-8 w-8 sm:h-10 sm:w-10 shrink-0" />
+          {/* Remplacement du composant Crest par la balise img */}
+          <img
+            src="/galerie/logo-removebg-preview.png" // ou src={logoImg} si importé depuis src/
+            alt="Logo Collège Catholique Saint Charles Borromée"
+            className="h-9 w-auto sm:h-11 shrink-0 object-contain rounded-full"
+          />
+
           <span className="font-display text-white leading-tight min-w-0">
             <span className="block text-[0.55rem] sm:text-[0.65rem] tracking-[0.12em] sm:tracking-[0.2em] uppercase font-mono truncate">
               Collège Catholique
