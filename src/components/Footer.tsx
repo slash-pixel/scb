@@ -1,7 +1,6 @@
 import { Mail, Phone, Briefcase } from "lucide-react";
 import { FaFacebook } from "react-icons/fa";
-import { Link } from "react-router-dom"; // Ajout de l'import React Router
-import Crest from "./Crest";
+import { Link } from "react-router-dom";
 
 const LIENS = [
   { label: "Accueil", href: "/#accueil" },
@@ -21,7 +20,12 @@ export default function Footer() {
           {/* Colonne 1 : Présentation */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <Crest className="h-9 w-9" />
+              {/* Remplacement de Crest par l'image du logo */}
+              <img
+                src="/galerie/logo-removebg-preview.png" // Utilisez /galerie/logo.png si vous avez créé la version transparente, ou /galerie/logo.jpg
+                alt="Logo Collège Catholique Saint Charles Borromée"
+                className="h-9 w-9 shrink-0 object-cover rounded-full border border-gold/30"
+              />
               <span className="font-display text-white font-semibold leading-tight">
                 Saint Charles
                 <br />
@@ -93,7 +97,6 @@ export default function Footer() {
             <p className="text-sm leading-relaxed mb-5 max-w-xs">
               Rejoignez notre équipe éducative et administrative pour construire l'excellence de demain.
             </p>
-            {/* Utilisation de <Link> avec la propriété "to" */}
             <Link
               to="/recrutement"
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-navy-deep transition-all duration-300 hover:bg-gold-soft hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
