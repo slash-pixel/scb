@@ -9,6 +9,8 @@ import {
   TestTubeDiagonal, Palette, Map, MonitorSmartphone,
   // Espace Privé
   GraduationCap, Mail, BookMarked, CreditCard,
+  // Événements
+  PartyPopper, Cake, BookCheck,
   // UI
   ChevronRight
 } from "lucide-react";
@@ -19,7 +21,6 @@ const TABS_DATA = [
     label: "Informations pratiques",
     category: "Pratique",
     title: "Tout ce que vous devez savoir",
-    // Palette 1 : Ambre & Sable Chaud
     bgGradient: "from-amber-100/90 via-stone-100 to-orange-100/90",
     badgeStyle: "bg-amber-900/10 text-amber-950",
     titleColor: "text-amber-950",
@@ -28,10 +29,10 @@ const TABS_DATA = [
     iconBox: "bg-amber-200/60 text-amber-900 group-hover:bg-amber-900 group-hover:text-amber-200",
     ctaColor: "text-amber-900 group-hover:text-amber-700",
     cards: [
-      { id: "h1", title: "Horaires administrattive et cours ", desc: "Lundi–Vendredi : 7h30–17h30\n samedi  : 7h30–12h30\n uniquement Bureaux sur rendez-vous", cta: "Voir les détails", icon: Clock },
-      { id: "h2", title: "Cantine Scolaire", desc: "Repas équilibrés servis tous les jours. Service de 10h00 à 10h30 puis de 12h30 à 13h00.", cta: "Voir les menus", icon: Utensils },
-      { id: "h3", title: "Transport Scolaire", desc: "pas encore actif mais en cours de réalisation", icon: Bus },
-      { id: "h4", title: "Localisation", desc: "ndogsimbi, Douala · Cameroun\nPrès de l'institut Panafricain pour le Développement\nParking visiteurs disponible", cta: "Itinéraires", icon: MapPin },
+      { id: "h1", title: "Horaires administration et cours", desc: "Lundi–Vendredi : 7h30–16h00\n Samedi : 7h30–12h30\n Bureaux uniquement sur rendez-vous", icon: Clock },
+      { id: "h2", title: "Cantine Scolaire", desc: "Repas équilibrés servis tous les jours. Service de 10h00 à 10h30 puis de 12h30 à 13h00.", icon: Utensils },
+      { id: "h3", title: "Transport Scolaire", desc: "Pas encore actif mais en cours de réalisation", icon: Bus },
+      { id: "h4", title: "Localisation", desc: "Ndogsimbi, Douala · Cameroun\nPrès de l'Institut Panafricain pour le Développement\nParking visiteurs disponible", icon: MapPin },
     ],
   },
   {
@@ -39,7 +40,6 @@ const TABS_DATA = [
     label: "Vie scolaire",
     category: "Vie Scolaire",
     title: "Au cœur de l'établissement",
-    // Palette 2 : Vert Sauge & Menthe Profonde
     bgGradient: "from-emerald-100/80 via-stone-100 to-teal-100/80",
     badgeStyle: "bg-emerald-950/10 text-emerald-950",
     titleColor: "text-emerald-950",
@@ -48,10 +48,10 @@ const TABS_DATA = [
     iconBox: "bg-emerald-200/60 text-emerald-900 group-hover:bg-emerald-900 group-hover:text-emerald-200",
     ctaColor: "text-emerald-900 group-hover:text-emerald-700",
     cards: [
-      { id: "v1", title: "Corps Enseignant", desc: "85 professeurs qualifiés et passionnés. Un accompagnement personnalisé pour chaque élève, de la 6ème à la Terminale.", cta: "Découvrir l'équipe", icon: Users },
-      { id: "v2", title: "Règlement Intérieur", desc: "Un environnement bienveillant mais structuré pour favoriser l'épanouissement de tous. Consultez le règlement en vigueur.", cta: "Télécharger", icon: BookOpenCheck },
-      { id: "v3", title: "Filières & Options", desc: "Séries Scientifiques, Littéraires. Options : Anglais renforcé, Arts plastiques, Informatique.", cta: "Explorer les filières", icon: Compass },
-      { id: "v4", title: "Pastorale Scolaire", desc: "Messes journalières, homonerie scolaire, mouvement d'action catholique, cathéchese: au terme de trois ans d'initiations les étudiants recoivent les sacrements . La foi au cœur de notre projet éducatif.", cta: "Programme pastoral", icon: Heart },
+      { id: "v1", title: "Corps Enseignant", desc: "85 professeurs qualifiés et passionnés. Un accompagnement personnalisé pour chaque élève, de la 6ème à la Terminale.", icon: Users },
+      { id: "v2", title: "Règlement Intérieur", desc: "Un environnement bienveillant mais structuré pour favoriser l'épanouissement de tous. Consultez le règlement en vigueur.", icon: BookOpenCheck },
+      { id: "v3", title: "Filières & Options", desc: "Séries Scientifiques, Littéraires. Options : Anglais renforcé, Arts plastiques, Informatique.", icon: Compass },
+      { id: "v4", title: "Pastorale Scolaire", desc: "Messes journalières, aumônerie scolaire, mouvement d'action catholique, catéchèse : au terme de trois ans d'initiations les étudiants reçoivent les sacrements. La foi au cœur de notre projet éducatif.", cta: "Programme pastoral", icon: Heart },
     ],
   },
   {
@@ -59,7 +59,6 @@ const TABS_DATA = [
     label: "Projets pédagogiques",
     category: "Pédagogie",
     title: "Projets et sorties scolaires",
-    // Palette 3 : Terracotta & Corail Doux
     bgGradient: "from-rose-100/90 via-orange-100/70 to-amber-100/90",
     badgeStyle: "bg-rose-950/10 text-rose-950",
     titleColor: "text-rose-950",
@@ -68,10 +67,10 @@ const TABS_DATA = [
     iconBox: "bg-rose-200/60 text-rose-900 group-hover:bg-rose-900 group-hover:text-rose-100",
     ctaColor: "text-rose-900 group-hover:text-rose-700",
     cards: [
-      { id: "p1", title: "Club Sciences", desc: "Expériences en laboratoire, participation aux olympiades de mathématiques et de chimie au niveau national.", cta: "En savoir plus", icon: TestTubeDiagonal },
-      { id: "p2", title: "Arts et Culture", desc: "Théâtre scolaire, chorale, expositions artistiques annuelles. Le talent de chaque élève mis en lumière.", cta: "Voir le programme", icon: Palette },
-      { id: "p3", title: "Sorties pédagogiques", desc: "Visites muséales à Yaoundé, sorties écologiques au Mont Cameroun, échanges scolaires inter-établissements.", cta: "Calendrier", icon: Map },
-      { id: "p4", title: "Numérique éducatif", desc: "Salle informatique équipée de 40 postes. Initiation au code, tablettes numériques en classe de Seconde.", cta: "Voir l'équipement", icon: MonitorSmartphone },
+      { id: "p1", title: "Club Sciences", desc: "Expériences en laboratoire, participation aux olympiades de mathématiques et de chimie au niveau national.", icon: TestTubeDiagonal },
+      { id: "p2", title: "Arts et Culture", desc: "Théâtre scolaire, chorale, expositions artistiques annuelles. Le talent de chaque élève mis en lumière.", icon: Palette },
+      { id: "p3", title: "Sorties pédagogiques", desc: "Visites muséales à Yaoundé, sorties écologiques au Mont Cameroun, échanges scolaires inter-établissements.", icon: Map },
+      { id: "p4", title: "Numérique éducatif", desc: "Salle informatique équipée de 40 postes. Initiation au code, tablettes numériques en classe de Seconde.", icon: MonitorSmartphone },
     ],
   },
   {
@@ -79,7 +78,6 @@ const TABS_DATA = [
     label: "Espace élèves/parents",
     category: "Espace Privé",
     title: "Portail élèves & parents",
-    // Palette 4 : Prune, Violet & Lavande
     bgGradient: "from-purple-100/90 via-slate-100 to-indigo-100/90",
     badgeStyle: "bg-purple-950/10 text-purple-950",
     titleColor: "text-purple-950",
@@ -88,10 +86,44 @@ const TABS_DATA = [
     iconBox: "bg-purple-200/60 text-purple-900 group-hover:bg-purple-900 group-hover:text-purple-100",
     ctaColor: "text-purple-900 group-hover:text-purple-700",
     cards: [
-      { id: "e1", title: "Bulletins en ligne", desc: "Consultez les notes et bulletins trimestriels de votre enfant en temps réel sur notre plateforme sécurisée.", cta: "Se connecter", icon: GraduationCap },
-      { id: "e2", title: "Messagerie", desc: "Communication directe avec les enseignants et l'administration. Suivi des absences et justificatifs en ligne.", cta: "Accéder", icon: Mail },
-      { id: "e3", title: "Devoirs en ligne", desc: "Accès aux devoirs, exercices supplémentaires et ressources pédagogiques déposés par les professeurs.", cta: "Consulter", icon: BookMarked },
-      { id: "e4", title: "Paiement scolarité", desc: "Règlement des frais de scolarité en ligne, suivi des paiements et téléchargement des reçus.", cta: "Gérer le compte", icon: CreditCard },
+      { id: "e1", title: "Bulletins en ligne", desc: "Consultez les notes et bulletins trimestriels de votre enfant en temps réel sur notre plateforme sécurisée.", icon: GraduationCap },
+      { id: "e2", title: "Messagerie", desc: "Communication directe avec les enseignants et l'administration. Suivi des absences et justificatifs en ligne.", icon: Mail },
+      { id: "e3", title: "Devoirs en ligne", desc: "Accès aux devoirs, exercices supplémentaires et ressources pédagogiques déposés par les professeurs.", icon: BookMarked },
+      { id: "e4", title: "Paiement scolarité", desc: "Règlement des frais de scolarité en ligne, suivi des paiements et téléchargement des reçus.", icon: CreditCard },
+    ],
+  },
+  {
+    id: "evenements",
+    label: "Événements",
+    category: "Événements",
+    title: "Temps forts & Rassemblements",
+    // Juste un tout petit peu plus vivant que le pastel pur, tout en restant très doux
+    bgGradient: "from-amber-200/85 via-yellow-100/90 to-orange-200/85",
+    badgeStyle: "bg-amber-950/10 text-amber-950 font-medium",
+    titleColor: "text-amber-950",
+    cardBorder: "border-amber-900/15 hover:border-amber-900/30",
+    cardShadow: "hover:shadow-amber-900/10",
+    iconBox: "bg-amber-200/80 text-amber-950 group-hover:bg-amber-900 group-hover:text-amber-200",
+    ctaColor: "text-amber-900 group-hover:text-amber-700",
+    cards: [
+      { 
+        id: "ev1", 
+        title: "Mariages & Réceptions", 
+        desc: "Organisation de vins d'honneur, repas et réceptions de mariage dans un cadre sécurisé, spacieux et adapté.", 
+        icon: PartyPopper 
+      },
+      { 
+        id: "ev2", 
+        title: "Anniversaires", 
+        desc: "Accueil de fêtes d'anniversaire et de célébrations familiales pendant les week-ends et périodes de vacances.", 
+        icon: Cake 
+      },
+      { 
+        id: "ev3", 
+        title: "Centre d'Examen OBC", 
+        desc: "Sous-centre officiel agréé par l'Office du Baccalauréat du Cameroun pour le déroulement des épreuves du Probatoire.", 
+        icon: BookCheck 
+      }
     ],
   },
 ];
@@ -156,7 +188,7 @@ export default function InteractiveHub() {
           >
             {/* En-tête de la section */}
             <div className="text-center max-w-3xl mx-auto mb-14">
-              <span className={`inline-block px-3 py-1 rounded-full font-mono text-xs tracking-[0.2em] uppercase font-semibold mb-4 ${activeTab.badgeStyle}`}>
+              <span className={`inline-block px-3 py-1 rounded-full font-mono text-xs tracking-[0.2em] uppercase mb-4 shadow-sm ${activeTab.badgeStyle}`}>
                 {activeTab.category}
               </span>
               <h2 className={`font-display text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight ${activeTab.titleColor}`}>
@@ -164,8 +196,14 @@ export default function InteractiveHub() {
               </h2>
             </div>
 
-            {/* Grille des 4 cartes unifiées */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Grille des cartes avec adaptation dynamique du nombre de colonnes */}
+            <div 
+              className={`grid sm:grid-cols-2 gap-6 ${
+                activeTab.cards.length === 3 
+                  ? "lg:grid-cols-3 max-w-5xl mx-auto" 
+                  : "lg:grid-cols-4" 
+              }`}
+            >
               {activeTab.cards.map((card, index) => {
                 const Icon = card.icon;
 
@@ -195,13 +233,15 @@ export default function InteractiveHub() {
                       </p>
                     </div>
 
-                    {/* Bouton d'action */}
-                    <div className="mt-8 pt-4 border-t border-stone-200/80">
-                      <button className={`inline-flex items-center gap-2 text-xs font-bold transition-all duration-300 ${activeTab.ctaColor}`}>
-                        <span>{card.cta}</span>
-                        <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </button>
-                    </div>
+                    {/* Point focal spécifique : "Programme pastoral" en rouge */}
+                    {card.cta === "Programme pastoral" && (
+                      <div className="mt-8 pt-4 border-t border-red-100">
+                        <button className="inline-flex items-center gap-2 text-xs font-bold text-red-700 transition-colors hover:text-red-950">
+                          <span>{card.cta}</span>
+                          <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </button>
+                      </div>
+                    )}
                   </motion.div>
                 );
               })}

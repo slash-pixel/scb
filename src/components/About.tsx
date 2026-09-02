@@ -48,10 +48,9 @@ export default function About() {
                 Une éducation catholique, rigoureuse et humaine
               </h2>
               <p className="mt-6 text-ink-soft leading-relaxed text-base md:text-lg">
-                Depuis sa fondation à Douala, le Collège Catholique Saint
+                Depuis sa création à Douala, le Collège Catholique Saint
                 Charles Borromée forme des générations d'élèves à devenir
-                des adultes compétents, intègres et engagés — fidèles à sa
-                double vocation d'enseignement général et technique.
+                des adultes compétents, intègres et engagés 
               </p>
 
               {/* BOUTON MOT DE BIENVENUE */}

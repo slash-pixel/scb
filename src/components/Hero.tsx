@@ -32,9 +32,9 @@ export default function Hero() {
           transition={{ duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-white leading-[1.1] max-w-2xl"
         >
-          Former des esprits libres,
+          Pour une éducation intégrale et humaine,
           <br />
-          enracinés dans la foi.
+          centrée sur la personne face au défi du monde moderne et du numérique.
         </motion.h1>
 
         <motion.p
@@ -43,8 +43,8 @@ export default function Hero() {
           transition={{ duration: 0.9, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="mt-6 max-w-xl text-base md:text-lg text-white/80 leading-relaxed"
         >
-          Le Collège Catholique Saint Charles Borromée accompagne chaque
-          élève de Douala vers l'excellence académique, dans un cadre
+          Le Collège Catholique Saint Charles Borromée accompagne ces
+          élèves vers l'excellence académique, dans un cadre
           exigeant, humain et fidèle aux valeurs chrétiennes.
         </motion.p>
 
