@@ -11,8 +11,8 @@ import {
   GraduationCap, Mail, BookMarked, CreditCard,
   // Événements
   PartyPopper, Cake, BookCheck,
-  // UI
-  ChevronRight
+  // UI & Modale
+  ChevronRight, X, ArrowLeft
 } from "lucide-react";
 
 const TABS_DATA = [
@@ -97,7 +97,6 @@ const TABS_DATA = [
     label: "Événements",
     category: "Événements",
     title: "Temps forts & Rassemblements",
-    // Juste un tout petit peu plus vivant que le pastel pur, tout en restant très doux
     bgGradient: "from-amber-200/85 via-yellow-100/90 to-orange-200/85",
     badgeStyle: "bg-amber-950/10 text-amber-950 font-medium",
     titleColor: "text-amber-950",
@@ -130,6 +129,7 @@ const TABS_DATA = [
 
 export default function InteractiveHub() {
   const [activeTabId, setActiveTabId] = useState(TABS_DATA[0].id);
+  const [isPastoralOpen, setIsPastoralOpen] = useState(false);
   const activeTab = TABS_DATA.find((t) => t.id === activeTabId)!;
 
   return (
@@ -196,7 +196,7 @@ export default function InteractiveHub() {
               </h2>
             </div>
 
-            {/* Grille des cartes avec adaptation dynamique du nombre de colonnes */}
+            {/* Grille des cartes */}
             <div 
               className={`grid sm:grid-cols-2 gap-6 ${
                 activeTab.cards.length === 3 
@@ -233,12 +233,18 @@ export default function InteractiveHub() {
                       </p>
                     </div>
 
-                    {/* Point focal spécifique : "Programme pastoral" en rouge */}
+                    {/* Bouton CTA "Programme pastoral" (Bleu avec survol Doré) */}
                     {card.cta === "Programme pastoral" && (
-                      <div className="mt-8 pt-4 border-t border-red-100">
-                        <button className="inline-flex items-center gap-2 text-xs font-bold text-red-700 transition-colors hover:text-red-950">
+                      <div className="mt-8 pt-4 border-t border-blue-100">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsPastoralOpen(true);
+                          }}
+                          className="inline-flex items-center gap-2 text-xs font-bold text-blue-700 hover:text-amber-500 transition-colors duration-300 group/btn cursor-pointer"
+                        >
                           <span>{card.cta}</span>
-                          <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                          <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                         </button>
                       </div>
                     )}
@@ -247,6 +253,104 @@ export default function InteractiveHub() {
               })}
             </div>
           </motion.div>
+        </AnimatePresence>
+
+        {/* Fenêtre Modale : Programme Pastoral */}
+        <AnimatePresence>
+          {isPastoralOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className="relative w-full max-w-lg bg-white rounded-3xl p-6 md:p-8 shadow-2xl border border-stone-200 overflow-hidden text-stone-900"
+              >
+                {/* En-tête Modale */}
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-100">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-xl bg-blue-50 text-blue-700">
+                      <Heart className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-xl font-bold text-stone-900">
+                        Programme Pastoral
+                      </h3>
+                      <p className="text-xs text-stone-500">Horaires des messes et cérémonies</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsPastoralOpen(false)}
+                    className="p-2 rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                {/* Corps Modale */}
+                <div className="space-y-4 text-sm">
+                  {/* Messes */}
+                  <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/50">
+                    <h4 className="font-semibold text-amber-950 mb-2 flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-amber-700" /> Messes
+                    </h4>
+                    <div className="space-y-1 text-stone-700 text-xs md:text-sm">
+                      <div className="flex justify-between border-b border-amber-200/40 pb-1">
+                        <span className="font-medium">Lundi :</span>
+                        <span>12h00 – 12h30</span>
+                      </div>
+                      <div className="flex justify-between pt-1">
+                        <span className="font-medium">Mardi :</span>
+                        <span>12h00 – 12h30</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Exposition Saint Sacrement */}
+                  <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/50">
+                    <h4 className="font-semibold text-blue-950 mb-2 flex items-center gap-2">
+                      <Heart className="h-4 w-4 text-blue-700" /> Exposition du Saint-Sacrement
+                    </h4>
+                    <div className="space-y-1 text-stone-700 text-xs md:text-sm">
+                      <div className="flex justify-between border-b border-blue-200/40 pb-1">
+                        <span className="font-medium">Mercredi :</span>
+                        <span>12h00 – 12h30</span>
+                      </div>
+                      <div className="flex justify-between border-b border-blue-200/40 py-1">
+                        <span className="font-medium">Jeudi :</span>
+                        <span>12h00 – 12h30</span>
+                      </div>
+                      <div className="flex justify-between pt-1">
+                        <span className="font-medium">Vendredi :</span>
+                        <span>5h45 – 11h50</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Temps de Carême */}
+                  <div className="p-4 rounded-2xl bg-purple-50/70 border border-purple-200/50">
+                    <h4 className="font-semibold text-purple-950 mb-1 flex items-center gap-2">
+                      <Compass className="h-4 w-4 text-purple-700" /> Temps de Carême
+                    </h4>
+                    <p className="text-xs md:text-sm text-stone-700">
+                      <span className="font-medium">Chemin de croix :</span> les vendredis après les cours à <strong className="text-purple-900">16h00</strong>.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bouton de retour */}
+                <div className="mt-6 pt-4 border-t border-stone-100 flex justify-end">
+                  <button
+                    onClick={() => setIsPastoralOpen(false)}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-stone-900 text-white text-xs font-semibold hover:bg-amber-600 transition-colors shadow-sm cursor-pointer"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    <span>Retour aux informations</span>
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
         </AnimatePresence>
         
       </div>

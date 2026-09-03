@@ -42,10 +42,10 @@ export default function About() {
           <div className="lg:col-span-5">
             <ScrollReveal>
               <p className="font-mono text-xs tracking-[0.25em] uppercase text-navy/75 mb-4">
-                Notre mission
+                La mission
               </p>
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold text-ink leading-[1.1]">
-                Une éducation catholique, rigoureuse et humaine
+              <h2 className="font-display text-2xl md:text-2xl lg:text-4xl font-semibold text-ink leading-[1.1]">
+                Une éducation catholique, au service de la formation intégrale de la personne (excellence académique, éducation morale, accompagement spirituel)
               </h2>
               <p className="mt-6 text-ink-soft leading-relaxed text-base md:text-lg">
                 Depuis sa création à Douala, le Collège Catholique Saint
