@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 interface ImageItem {
   id: string;
-  title: string;
+  title?: string;
   fileName: string;
   url: string;
   createdAt?: string;
@@ -12,7 +12,6 @@ interface ImageItem {
 const API_BASE_URL = "https://scbapi.onrender.com";
 
 export default function Form() {
-  const [title, setTitle] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -109,7 +108,7 @@ export default function Form() {
   // Envoi du formulaire à l'API Hono
   const handleUpload = async (e: FormEvent) => {
     e.preventDefault();
-    if (!title || !file) return;
+    if (!file) return;
 
     setIsLoading(true);
     setStatus(null);
@@ -121,7 +120,6 @@ export default function Form() {
     }
 
     const formData = new FormData();
-    formData.append("title", title);
     formData.append("image", file);
 
     try {
@@ -139,7 +137,6 @@ export default function Form() {
       }
 
       setStatus({ type: "success", message: "Image ajoutée à la galerie avec succès !" });
-      setTitle("");
       setFile(null);
       setPreview(null);
       
@@ -235,20 +232,6 @@ export default function Form() {
 
           <div>
             <label className="mb-2 block text-sm font-semibold text-ink">
-              Titre ou description de la photo
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ex: Cérémonie de remise des prix"
-              className="w-full rounded-xl border border-navy/15 p-3.5 text-sm outline-none focus:border-navy focus:ring-1 focus:ring-navy"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-ink">
               Fichier image
             </label>
             <input
@@ -273,7 +256,7 @@ export default function Form() {
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || !file}
             className="w-full rounded-xl bg-navy-deep py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-gold hover:text-navy-deep disabled:opacity-50"
           >
             {isLoading ? "Téléversement en cours..." : "Publier l'image"}
@@ -300,11 +283,10 @@ export default function Form() {
                 >
                   <img
                     src={getImageUrl(img.url)}
-                    alt={img.title}
-                    className="h-40 w-full object-cover"
+                    alt={img.title || "Image de la galerie"}
+                    className="h-48 w-full object-cover"
                   />
-                  <div className="flex flex-1 flex-col justify-between p-4 space-y-3">
-                    <p className="text-sm font-semibold text-ink line-clamp-2">{img.title}</p>
+                  <div className="p-3">
                     <button
                       onClick={() => handleDelete(img.id)}
                       disabled={deletingId === img.id}
