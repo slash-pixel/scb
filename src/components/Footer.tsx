@@ -1,5 +1,5 @@
 import { Mail, Phone, Briefcase } from "lucide-react";
-import { FaFacebook } from "react-icons/fa";
+import { FaFacebook, FaLinkedin } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const LIENS = [
@@ -20,9 +20,8 @@ export default function Footer() {
           {/* Colonne 1 : Présentation */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              {/* Remplacement de Crest par l'image du logo */}
               <img
-                src="/galerie/logo-removebg-preview.png" // Utilisez /galerie/logo.png si vous avez créé la version transparente, ou /galerie/logo.jpg
+                src="/galerie/logo-removebg-preview.png"
                 alt="Logo Collège Catholique Saint Charles Borromée"
                 className="h-9 w-9 shrink-0 object-cover rounded-full border border-gold/30"
               />
@@ -84,6 +83,18 @@ export default function Footer() {
                   className="hover:text-gold-soft transition-colors duration-300"
                 >
                   Collège Catholique Saint Charles Borromée
+                </a>
+              </li>
+              {/* Ajout du lien LinkedIn */}
+              <li className="flex items-center gap-2">
+                <FaLinkedin className="h-4 w-4 text-gold" />
+                <a
+                  href="https://www.linkedin.com/in/college-catholique-st-charles-borromée-237058418"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-gold-soft transition-colors duration-300"
+                >
+                  LinkedIn
                 </a>
               </li>
             </ul>

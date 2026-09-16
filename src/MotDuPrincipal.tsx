@@ -7,28 +7,28 @@ import Footer from "./components/Footer";
 const ANCIENS_PRINCIPAUX = [
   {
     id: 1,
-    nom: "M. Paul Biya",
+    nom: "",
     debut: "2015",
     fin: "2020",
     image: "/images/ancien-1.jpg",
   },
   {
     id: 2,
-    nom: "Mme. Marie Ndiaye",
+    nom: "",
     debut: "2010",
     fin: "2015",
     image: "/images/ancien-2.jpg",
   },
   {
     id: 3,
-    nom: "Père Jacques Lemaire",
+    nom: "",
     debut: "2002",
     fin: "2010",
     image: "/images/ancien-3.jpg",
   },
   {
     id: 4,
-    nom: "M. Robert Kamga",
+    nom: "",
     debut: "1995",
     fin: "2002",
     image: "/images/ancien-4.jpg",
@@ -57,14 +57,14 @@ export default function MotDuPrincipal() {
             <div className="relative w-64 h-80 lg:w-full lg:h-[400px] rounded-2xl overflow-hidden shadow-2xl mb-6">
               {/* Remplace par la vraie photo du principal actuel */}
               <img 
-                src="/images/principal-actuel.jpg" 
+                src="/galerie/ph2.JPG" 
                 alt="Principal actuel du Collège" 
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 border-4 border-gold/40 rounded-2xl pointer-events-none"></div>
             </div>
             <div className="text-center lg:text-left w-full">
-              <h2 className="text-2xl font-display font-bold text-navy-deep">M. Jean Dupont</h2>
+              <h2 className="text-2xl font-display font-bold text-navy-deep"></h2>
               <p className="text-gold font-semibold uppercase tracking-wider text-sm mt-1">
                 Principal en exercice (2020 - Présent)
               </p>

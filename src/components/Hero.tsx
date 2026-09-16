@@ -11,39 +11,47 @@ export default function Hero() {
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: "url('/sbc.jpg')" }}
       />
-      {/* Dégradé de lisibilité — piloté par les couleurs du thème (plus de
-          valeurs codées en dur : il reste toujours synchronisé si la
-          couleur navy change dans theme.css). */}
-      <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/95 via-navy/55 to-navy/30" />
+      
+      {/* 
+        Dégradé de lisibilité ajusté. 
+        On assombrit légèrement le 'via' et le 'to' pour garantir 
+        un contraste parfait, peu importe l'image derrière.
+      */}
+      <div className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/80 to-navy-deep/40" />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-6 lg:px-10 pb-24 md:pb-28">
+        
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="font-mono text-xs md:text-sm tracking-[0.25em] uppercase text-gold-soft mb-5"
+          className="font-mono text-xs tracking-[0.25em] uppercase text-gold-soft mb-4 drop-shadow-md"
         >
-          Établissement catholique · Douala, Cameroun
         </motion.p>
 
+        {/* 
+          Taille réduite : lg:text-5xl au lieu de 6xl.
+          Ajout de drop-shadow-md pour détacher le texte de l'image.
+        */}
         <motion.h1
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-white leading-[1.1] max-w-2xl"
+          className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white leading-tight max-w-3xl drop-shadow-md"
         >
           Pour une éducation intégrale et humaine,
-          <br />
+          <br className="hidden sm:block" /> {/* Évite un saut de ligne maladroit sur mobile */}
           centrée sur la personne face au défi du monde moderne et du numérique.
         </motion.h1>
 
+        {/* Opacité augmentée de text-white/80 à text-white/95 pour une meilleure lisibilité */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 max-w-xl text-base md:text-lg text-white/80 leading-relaxed"
+          className="mt-6 max-w-xl text-base md:text-lg text-white/95 leading-relaxed drop-shadow"
         >
-          Le Collège Catholique Saint Charles Borromée accompagne ces
+          Le Collège Catholique Saint Charles Borromée accompagne ses
           élèves vers l'excellence académique, dans un cadre
           exigeant, humain et fidèle aux valeurs chrétiennes.
         </motion.p>
