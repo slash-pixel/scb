@@ -83,7 +83,7 @@ export default function MotDuPrincipal({ className = "" }: MotDuPrincipalProps) 
                   {/* Badge d'identification */}
                   <div className="absolute bottom-5 left-5 right-5 p-5 backdrop-blur-md bg-white/10 rounded-xl border border-white/20 text-white shadow-[0_10px_25px_rgba(0,0,0,0.4)]">
                     <p className="font-display font-semibold text-lg text-white">
-                      M. [Nom du Principal]
+                      M. Abbé Francis Epah
                     </p>
                     <p className="text-gold-soft text-xs font-medium uppercase tracking-wider mt-1">
                       Principal du collège depuis 2020
@@ -140,7 +140,7 @@ export default function MotDuPrincipal({ className = "" }: MotDuPrincipalProps) 
                 <div className="h-12 w-1 bg-gold rounded-full shadow-sm shadow-gold/40"></div>
                 <div>
                   <p className="font-script text-3xl text-navy-deep leading-none">
-                    [Nom du Principal]
+                    Abbé Francis Epah
                   </p>
                   <p className="text-xs uppercase tracking-[0.2em] text-gold font-semibold mt-1">
                     Principal de l'établissement
