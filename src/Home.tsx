@@ -1,6 +1,7 @@
 
 import AppLayout from "./components/navket";
 import About from "./components/About";
+import Motpr from "./components/Motpr";
 import InteractiveHub from"./components/sectio";
 import Filieres from "./components/Filieres";
 import Stats from "./components/Stats";
@@ -16,6 +17,7 @@ export default function App() {
     <div className="font-body text-ink antialiased">
       <AppLayout />
       <About />
+      <Motpr />
       <InteractiveHub />
       <Filieres />
       <Stats />
