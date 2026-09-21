@@ -4,7 +4,7 @@ export default function Hero() {
   return (
     <section
       id="accueil"
-      className="relative h-screen min-h-[640px] w-full overflow-hidden flex items-end"
+      className="relative h-dvh min-h-[680px] w-full overflow-hidden flex items-end"
     >
       {/* Image de fond */}
       <div
@@ -13,38 +13,28 @@ export default function Hero() {
       />
       
       {/* 
-        Dégradé de lisibilité ajusté. 
-        On assombrit légèrement le 'via' et le 'to' pour garantir 
-        un contraste parfait, peu importe l'image derrière.
+        Dégradés de lisibilité :
+        - Dégradé du haut : Assure la lisibilité de la Navbar fixe.
+        - Dégradé du bas : Détache le texte et fait la transition vers la section suivante.
       */}
-      <div className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/80 to-navy-deep/40" />
+      <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/70 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/85 to-navy-deep/30" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 lg:px-10 pb-24 md:pb-28">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 lg:px-10 pb-20 md:pb-24 pt-28">
         
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="font-mono text-xs tracking-[0.25em] uppercase text-gold-soft mb-4 drop-shadow-md"
-        >
-        </motion.p>
-
-        {/* 
-          Taille réduite : lg:text-5xl au lieu de 6xl.
-          Ajout de drop-shadow-md pour détacher le texte de l'image.
-        */}
+        {/* Titre principal */}
         <motion.h1
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white leading-tight max-w-3xl drop-shadow-md"
+          className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white leading-tight max-w-4xl drop-shadow-md"
         >
-          Pour une éducation intégrale et humaine,
-          <br className="hidden sm:block" /> {/* Évite un saut de ligne maladroit sur mobile */}
+          Pour une éducation intégrale et humaine,{" "}
+          <br className="hidden sm:block" />
           centrée sur la personne face au défi du monde moderne et du numérique.
         </motion.h1>
 
-        {/* Opacité augmentée de text-white/80 à text-white/95 pour une meilleure lisibilité */}
+        {/* Description */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -56,11 +46,12 @@ export default function Hero() {
           exigeant, humain et fidèle aux valeurs chrétiennes.
         </motion.p>
 
+        {/* Boutons d'action */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-10 flex flex-wrap items-center gap-4"
+          className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4"
         >
           <a
             href="#a-propos"
@@ -81,20 +72,15 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Repère de défilement */}
+      {/* Repère de défilement (Scroll indicator) */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1.1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden sm:block"
       >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          className="h-9 w-5 rounded-full border border-white/40 flex justify-center pt-1.5"
-        >
-          <span className="h-1.5 w-1 rounded-full bg-gold" />
-        </motion.div>
+        <a href="#a-propos" aria-label="Défiler vers la section à propos">
+        </a>
       </motion.div>
     </section>
   );

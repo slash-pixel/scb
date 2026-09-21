@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { ArrowRight, GraduationCap, HeartHandshake, Users } from "lucide-react";
+
+import { GraduationCap, HeartHandshake, Users } from "lucide-react";
 import { motion } from "motion/react";
 import ScrollReveal from "./ScrollReveal";
 
@@ -53,18 +53,6 @@ export default function About() {
                 des adultes compétents, intègres et engagés 
               </p>
 
-              {/* BOUTON MOT DE BIENVENUE */}
-              <div className="mt-8">
-                <Link
-                  to="/mot-du-principal"
-                  className="group inline-flex items-center gap-3 rounded-full bg-navy px-6 py-3.5 text-sm 
-                  font-semibold text-white shadow-md transition-all duration-300 hover:bg-gold hover:text-navy-deep hover:shadow-xl 
-                  hover:shadow-gold/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-                >
-                  <span>Mot de Bienvenue</span>
-                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                </Link>
-              </div>
             </ScrollReveal>
           </div>
 
