@@ -131,7 +131,7 @@ export default function Contact() {
                     </span>
                     {/* Adresse à confirmer / préciser le quartier exact */}
                     <span className="text-white/80 pt-2 transition-colors duration-300 group-hover/row:text-white">
-                      BP 897, Douala, Cameroun
+                      BP 179, Douala, Cameroun
                     </span>
                   </a>
                 </li>

@@ -6,25 +6,84 @@ interface MotDuPrincipalProps {
   className?: string;
 }
 
-// Données fictives des anciens principaux (à adapter selon vos besoins)
-const anciensPrincipaux = [
+interface AncienPrincipal {
+  nom: string;
+  priseDeFonction: string;
+  finDeMandat: string;
+  initiales: string;
+  photo?: string;
+}
+
+// Liste historique des anciens principaux
+const anciensPrincipaux: AncienPrincipal[] = [
   {
-    nom: "Père Jean-Marc Ondo",
-    priseDeFonction: "Septembre 2015",
-    finDeMandat: "Août 2020",
-    initiales: "JO",
+    nom: "Ab. Serge Emmanuel BANYEB BIYAG",
+    priseDeFonction: "Juillet 2019",
+    finDeMandat: "Juillet 2024",
+    initiales: "SB",
+    photo: "/galerie/anciens-principaux/banyeb-biyag.jpg",
   },
   {
-    nom: "M. Emmanuel Mbarga",
-    priseDeFonction: "Septembre 2008",
-    finDeMandat: "Juillet 2015",
-    initiales: "EM",
+    nom: "Ab. Roger Joseph LIMA",
+    priseDeFonction: "Juillet 2018",
+    finDeMandat: "Juillet 2019",
+    initiales: "RL",
   },
   {
-    nom: "Sr. Marie-Claire Talla",
-    priseDeFonction: "Septembre 2000",
+    nom: "Ab. Louis BOULOU MBEA",
+    priseDeFonction: "Juillet 2016",
+    finDeMandat: "Juillet 2018",
+    initiales: "LB",
+    photo: "/galerie/anciens-principaux/boulou-mbea.jpg",
+  },
+  {
+    nom: "Ab. Gui Rostand KUN V",
+    priseDeFonction: "Avril 2016",
+    finDeMandat: "Juillet 2016",
+    initiales: "GK",
+  },
+  {
+    nom: "Ab. Victorin Pierre HEE",
+    priseDeFonction: "Juillet 2013",
+    finDeMandat: "Juillet 2016",
+    initiales: "VH",
+    photo: "/galerie/anciens-principaux/victorin-hee.jpg",
+  },
+  {
+    nom: "Ab. Eloi NGAMBY SAME",
+    priseDeFonction: "Juillet 2010",
+    finDeMandat: "Juillet 2013",
+    initiales: "EN",
+  },
+  {
+    nom: "Ab. René NGON NTONYE",
+    priseDeFonction: "Juillet 2008",
+    finDeMandat: "Juillet 2010",
+    initiales: "RN",
+  },
+  {
+    nom: "Ab. Lucien SIEMANIANU",
+    priseDeFonction: "Juillet 2007",
     finDeMandat: "Juillet 2008",
-    initiales: "MT",
+    initiales: "LS",
+  },
+  {
+    nom: "Ab. Serge Makemilien EBOA",
+    priseDeFonction: "Juillet 2005",
+    finDeMandat: "Juillet 2007",
+    initiales: "SE",
+  },
+  {
+    nom: "Ab. BAYEMEG",
+    priseDeFonction: "Juillet 2003",
+    finDeMandat: "Juillet 2005",
+    initiales: "AB",
+  },
+  {
+    nom: "Ab. Simon EPEA",
+    priseDeFonction: "Septembre 1996",
+    finDeMandat: "Juillet 2003",
+    initiales: "SE",
   },
 ];
 
@@ -68,10 +127,7 @@ export default function MotDuPrincipal({ className = "" }: MotDuPrincipalProps) 
               transition={{ duration: 0.6 }}
               className="lg:col-span-5 self-start w-full"
             >
-              {/* Conteneur externe : Box-shadow prononcé */}
               <div className="relative rounded-2xl shadow-[0_25px_60px_-10px_rgba(15,23,42,0.65)] hover:shadow-[0_30px_70px_-10px_rgba(212,175,55,0.45)] transition-shadow duration-500 group">
-                
-                {/* Conteneur interne avec rognage */}
                 <div className="overflow-hidden rounded-2xl relative">
                   <img
                     src="/galerie/ph2.JPG"
@@ -83,14 +139,13 @@ export default function MotDuPrincipal({ className = "" }: MotDuPrincipalProps) 
                   {/* Badge d'identification */}
                   <div className="absolute bottom-5 left-5 right-5 p-5 backdrop-blur-md bg-white/10 rounded-xl border border-white/20 text-white shadow-[0_10px_25px_rgba(0,0,0,0.4)]">
                     <p className="font-display font-semibold text-lg text-white">
-                      M. Abbé Francis Epah
+                      Ab. Francis EPAH
                     </p>
                     <p className="text-gold-soft text-xs font-medium uppercase tracking-wider mt-1">
                       Principal du collège depuis 2020
                     </p>
                   </div>
                 </div>
-
               </div>
             </motion.figure>
 
@@ -140,7 +195,7 @@ export default function MotDuPrincipal({ className = "" }: MotDuPrincipalProps) 
                 <div className="h-12 w-1 bg-gold rounded-full shadow-sm shadow-gold/40"></div>
                 <div>
                   <p className="font-script text-3xl text-navy-deep leading-none">
-                    Abbé Francis Epah
+                    Ab. Francis EPAH
                   </p>
                   <p className="text-xs uppercase tracking-[0.2em] text-gold font-semibold mt-1">
                     Principal de l'établissement
@@ -184,20 +239,30 @@ export default function MotDuPrincipal({ className = "" }: MotDuPrincipalProps) 
                   transition={{ duration: 0.4, ease: "easeInOut" }}
                   className="overflow-hidden"
                 >
-                  <div className="pt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="pt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     {anciensPrincipaux.map((p, idx) => (
                       <div
                         key={idx}
-                        className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/60 flex items-start gap-3.5 shadow-sm hover:shadow-md hover:bg-white transition-all duration-300"
+                        className="p-4.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-center gap-4.5 shadow-sm hover:shadow-md hover:bg-white transition-all duration-300"
                       >
-                        <div className="w-10 h-10 rounded-full bg-navy-deep text-gold font-bold text-xs flex items-center justify-center shrink-0 shadow-sm border border-gold/30 mt-0.5">
-                          {p.initiales}
+                        {/* Avatar agrandi à w-20 h-20 (80px x 80px) */}
+                        <div className="w-20 h-20 rounded-2xl overflow-hidden bg-navy-deep text-gold font-bold text-lg flex items-center justify-center shrink-0 shadow-md border-2 border-gold/40">
+                          {p.photo ? (
+                            <img
+                              src={p.photo}
+                              alt={p.nom}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span>{p.initiales}</span>
+                          )}
                         </div>
+
                         <div>
-                          <h4 className="font-semibold text-navy-deep text-sm sm:text-base">
+                          <h4 className="font-semibold text-navy-deep text-sm leading-tight">
                             {p.nom}
                           </h4>
-                          <div className="mt-1.5 space-y-0.5 text-xs text-slate-500">
+                          <div className="mt-2 space-y-0.5 text-xs text-slate-500">
                             <p>
                               Prise de fonction : <span className="font-medium text-slate-700">{p.priseDeFonction}</span>
                             </p>
