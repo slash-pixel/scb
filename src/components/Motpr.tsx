@@ -21,7 +21,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     priseDeFonction: "Juillet 2019",
     finDeMandat: "Juillet 2024",
     initiales: "SB",
-    photo: "/galerie/anciens-principaux/banyeb-biyag.jpg",
+    photo: "/galerie/pr1.jpeg",
   },
   {
     nom: "Ab. Roger Joseph LIMA",
@@ -34,7 +34,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     priseDeFonction: "Juillet 2016",
     finDeMandat: "Juillet 2018",
     initiales: "LB",
-    photo: "/galerie/anciens-principaux/boulou-mbea.jpg",
+    photo: "/galerie/pr3.jpeg",
   },
   {
     nom: "Ab. Gui Rostand KUN V",
@@ -47,7 +47,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     priseDeFonction: "Juillet 2013",
     finDeMandat: "Juillet 2016",
     initiales: "VH",
-    photo: "/galerie/anciens-principaux/victorin-hee.jpg",
+    photo: "/galerie/pr2.jpeg",
   },
   {
     nom: "Ab. Eloi NGAMBY SAME",
