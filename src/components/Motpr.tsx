@@ -37,7 +37,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     photo: "/galerie/pr3.jpeg",
   },
   {
-    nom: "Ab. Gui Rostand KUN V",
+    nom: "Ab. Guy Rostand KUN V",
     priseDeFonction: "Avril 2016",
     finDeMandat: "Juillet 2016",
     initiales: "GK",
@@ -70,7 +70,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     initiales: "LS",
   },
   {
-    nom: "Ab. Serge Makemilien EBOA",
+    nom: "Ab. Serge Marie Maximilien EBOA MEKOULOU",
     priseDeFonction: "Juillet 2005",
     finDeMandat: "Juillet 2007",
     initiales: "SE",
