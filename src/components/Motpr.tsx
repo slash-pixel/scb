@@ -21,7 +21,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     priseDeFonction: "Juillet 2019",
     finDeMandat: "Juillet 2024",
     initiales: "SB",
-    //photo: "/galerie/pr1.jpg",
+    photo: "/galerie/pr1.jpg",
   },
   {
     nom: "Ab. Roger Joseph LIMA",
