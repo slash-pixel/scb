@@ -51,7 +51,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     photo: "/galerie/pr2.jpeg",
   },
   {
-    nom: "Ab. Eloi NGAMBY SAME",
+    nom: "Ab. Eloi NGAMBI SAME",
     priseDeFonction: "Juillet 2010",
     finDeMandat: "Juillet 2013",
     initiales: "EN",
