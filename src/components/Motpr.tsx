@@ -55,6 +55,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     priseDeFonction: "Juillet 2010",
     finDeMandat: "Juillet 2013",
     initiales: "EN",
+        photo: "/galerie/pr6.png",
   },
   {
     nom: "Ab. René NGON NTONYE",
