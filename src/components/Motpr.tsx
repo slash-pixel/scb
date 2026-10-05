@@ -21,7 +21,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     priseDeFonction: "Juillet 2019",
     finDeMandat: "Juillet 2024",
     initiales: "SB",
-    photo: "/galerie/pr1.jpeg",
+    //photo: "/galerie/pr1.jpg",
   },
   {
     nom: "Ab. Roger Joseph LIMA",
@@ -41,6 +41,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     priseDeFonction: "Avril 2016",
     finDeMandat: "Juillet 2016",
     initiales: "GK",
+      photo: "/galerie/pr5.jpg",
   },
   {
     nom: "Ab. Victorin Pierre HEE",
@@ -60,6 +61,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     priseDeFonction: "Juillet 2008",
     finDeMandat: "Juillet 2010",
     initiales: "RN",
+      photo: "/galerie/pr4.jpg",
   },
   {
     nom: "Ab. Lucien SIEMANIANU",
@@ -142,7 +144,7 @@ export default function MotDuPrincipal({ className = "" }: MotDuPrincipalProps) 
                       Ab. Francis EPAH
                     </p>
                     <p className="text-gold-soft text-xs font-medium uppercase tracking-wider mt-1">
-                      Principal du collège depuis 2020
+                      Principal du collège depuis 2024
                     </p>
                   </div>
                 </div>
