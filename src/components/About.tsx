@@ -48,7 +48,7 @@ export default function About() {
                 Une éducation catholique, au service de la formation intégrale de la personne (excellence académique, éducation morale, accompagement spirituel)
               </h2>
               <p className="mt-6 text-ink-soft leading-relaxed text-base md:text-lg">
-                Depuis sa création à Douala, le Collège Catholique Saint
+                Depuis sa création en 1996, le Collège Catholique Saint
                 Charles Borromée forme des générations d'élèves à devenir
                 des adultes compétents, intègres et engagés 
               </p>

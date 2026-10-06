@@ -29,8 +29,8 @@ const TABS_DATA = [
     iconBox: "bg-amber-200/60 text-amber-900 group-hover:bg-amber-900 group-hover:text-amber-200",
     ctaColor: "text-amber-900 group-hover:text-amber-700",
     cards: [
-      { id: "h1", title: "Horaires administration et cours", desc: "Lundi–Vendredi : 7h30–16h00\n Samedi : 7h30–12h30\n Bureaux uniquement sur rendez-vous", icon: Clock },
-      { id: "h2", title: "Cantine Scolaire", desc: "Repas équilibrés servis tous les jours. Service de 10h00 à 10h30 puis de 12h30 à 13h00.", icon: Utensils },
+      { id: "h1", title: "Horaires administration et cours", desc: "Lundi–Vendredi : 7h30–16h30\n Samedi :uniquement sur rendez-vous", icon: Clock },
+      { id: "h2", title: "Cantine Scolaire", desc: "Repas équilibrés servis tous les jours. Service de 10h00 à 10h20 puis de 12h00 à 12h50 (le lundi) et 12h30 les autres jours .", icon: Utensils },
       { id: "h3", title: "Transport Scolaire", desc: "Pas encore actif mais en cours de réalisation", icon: Bus },
       { id: "h4", title: "Localisation", desc: "Ndogsimbi, Douala · Cameroun\nPrès de l'Institut Panafricain pour le Développement\nParking visiteurs disponible", icon: MapPin },
     ],

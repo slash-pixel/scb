@@ -5,7 +5,7 @@ import ScrollReveal from "./ScrollReveal";
 // de l'établissement avant mise en ligne.
 const CHIFFRES = [
   { valeur: 30, suffixe: "+", label: "Années d'expérience" },
-  { valeur: 1200, suffixe: "+", label: "Élèves accompagnés" },
+  { valeur: 25000, suffixe: "+", label: "Élèves accompagnés" },
   { valeur: 95, suffixe: "%", label: "Taux de réussite aux examens" },
   { valeur: 60, suffixe: "+", label: "Enseignants et encadreurs" },
 ];
