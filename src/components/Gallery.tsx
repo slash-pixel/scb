@@ -7,7 +7,7 @@ const PHOTOS = [
   { src: "/galerie/classe-1.jpg", alt: "Évaluations" },
   { src: "/galerie/rassemblement.jpg", alt: "Rassemblement" },
   { src: "/galerie/evenement-1.jpg", alt: "Événement extra-académique" },
-  { src: "/galerie/chapelle.jpg", alt: "Chapelle du collège" },
+  { src: "/galerie/vis.jpg", alt: "Image du collège" },
   { src: "/galerie/excellence.jpg", alt: "Excellence scolaire" },
 ];
 

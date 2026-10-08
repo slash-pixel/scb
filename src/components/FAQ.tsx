@@ -52,28 +52,19 @@ const FAQS: FaqItem[] = [
       "Quand ont lieu les examens offielles (BEPC, Probatoire, Baccalauréat) ?",
     reponse:
       "Ces examens sont organisés chaque année par le MINESEC et l'Office du Baccalauréat du Cameroun (OBC), généralement entre mai et juillet. À titre de référence, voici le calendrier de la session 2026 :",
-    tableau: {
-      colonnes: ["Examen", "Épreuves écrites", "Résultats"],
-      lignes: [
-        ["Baccalauréat", "25 – 30 mai 2026", "Mi-juillet 2026"],
-        ["Probatoire", "8 – 12 juin 2026", "Fin juillet 2026"],
-        ["BEPC", "2 – 5 juin 2026", "À partir du 6 juillet 2026"],
-      ],
-      note:
-        "Calendrier officiel republié chaque année par le MINESEC et l'OBC — vérifie les dates exactes de la session en cours auprès du secrétariat ou sur officedubac.cm.",
-    },
+
   },
   {
-    question: "Quand sont les vacances scolaires ?",
+    question: "Quel est le calendrier scolaire ?",
     reponse:
       "Le calendrier scolaire est fixé chaque année par arrêté conjoint du MINESEC et du MINEDUB. À titre de référence, voici les périodes de l'année scolaire 2025–2026 :",
     tableau: {
       colonnes: ["Période", "Dates"],
       lignes: [
-        ["Rentrée scolaire", "Lundi 3 septembre 2026"],
-        ["congés de Noël", "19 déc. 2025 → 6 janv. 2026"],
-        ["congés de Pâques", "2 avril → 20 avril 2026"],
-        ["Fin d'année scolaire", "Vendredi 31 juillet 2026"],
+        ["Rentrée scolaire", "Lundi 7 septembre 2026"],
+        ["congés de Noël", "18 déc. 2026 → 6 janv. 2027"],
+        ["congés de Pâques", "25 mars → 12 avril 2027"],
+        ["Fin d'année scolaire", "Vendredi 11 juin 2027"],
       ],
       note:
         "Le calendrier 2026–2027 (rentrée prévue le 7 septembre 2026) est publié par le MINESEC/MINEDUB généralement fin août — à actualiser dès sa parution.",
