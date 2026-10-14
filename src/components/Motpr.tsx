@@ -68,7 +68,8 @@ const anciensPrincipaux: AncienPrincipal[] = [
     nom: "Ab. Lucien SIEMANIANU",
     priseDeFonction: "Juillet 2007",
     finDeMandat: "Juillet 2008",
-    initiales: "/galerie/pr10.jpg",
+    initiales: "LS",
+    photo: 
   },
   {
     nom: "Ab. Serge Marie Maximilien EBOA MEKOULOU",
@@ -86,7 +87,8 @@ const anciensPrincipaux: AncienPrincipal[] = [
     nom: "Ab. Simon EPEA",
     priseDeFonction: "Septembre 1996",
     finDeMandat: "Juillet 2003",
-    initiales: "/galerie/pr9.jpg",
+    initiales: "SE",
+    photo:  "/galerie/pr9.jpg"
   },
 ];
 
