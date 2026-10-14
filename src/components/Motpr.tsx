@@ -69,7 +69,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     priseDeFonction: "Juillet 2007",
     finDeMandat: "Juillet 2008",
     initiales: "LS",
-    photo: 
+    photo:  "/galerie/pr10.jpg"
   },
   {
     nom: "Ab. Serge Marie Maximilien EBOA MEKOULOU",
