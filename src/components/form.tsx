@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import imageCompression from "browser-image-compression";
 
 interface ImageItem {
   id: string;
@@ -24,26 +25,22 @@ export default function Form() {
 
   const navigate = useNavigate();
 
-  // Fonction utilitaire robuste pour formater correctement l'URL (Cloudinary vs local)
+  // Fonction utilitaire pour formater correctement l'URL (Cloudinary vs local)
   const getImageUrl = (url: string) => {
     if (!url) return "";
 
-    // 1. URL standard absolue HTTP / HTTPS
     if (url.startsWith("http://") || url.startsWith("https://")) {
       return url;
     }
 
-    // 2. Erreur de formatage courante (ex: "https//res.cloudinary.com/...")
     if (url.startsWith("https//") || url.startsWith("http//")) {
       return url.replace(/^https?\/\//, "https://");
     }
 
-    // 3. Domaine Cloudinary direct sans protocole (ex: "res.cloudinary.com/...")
     if (url.startsWith("res.cloudinary.com") || url.startsWith("//res.cloudinary.com")) {
       return `https://${url.replace(/^\/\//, "")}`;
     }
 
-    // 4. Chemin relatif backend (ex: "/uploads/image.jpg")
     const cleanPath = url.startsWith("/") ? url : `/${url}`;
     return `${API_BASE_URL}${cleanPath}`;
   };
@@ -63,7 +60,7 @@ export default function Form() {
     }
   }, []);
 
-  // Chargement initial sécurisé dans useEffect
+  // Chargement initial
   useEffect(() => {
     let isMounted = true;
 
@@ -92,7 +89,7 @@ export default function Form() {
     };
   }, []);
 
-  // Gestion du choix de fichier et génération de l'aperçu
+  // Gestion du choix de fichier et aperçu
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
     setFile(selectedFile);
@@ -105,7 +102,7 @@ export default function Form() {
     }
   };
 
-  // Envoi du formulaire à l'API Hono
+  // Envoi du formulaire avec compression automatique côté client
   const handleUpload = async (e: FormEvent) => {
     e.preventDefault();
     if (!file) return;
@@ -119,10 +116,21 @@ export default function Form() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("image", file);
-
     try {
+      // 1. OPTION DE COMPRESSION CÔTÉ CLIENT (Empêche l'erreur >10Mo)
+      const options = {
+        maxSizeMB: 2,           // Réduit le fichier à ~2 Mo max
+        maxWidthOrHeight: 1920, // Ajuste les grandes dimensions
+        useWebWorker: true,
+      };
+
+      // Compression du fichier avant l'envoi
+      const compressedFile = await imageCompression(file, options);
+
+      // 2. PRÉPARATION ET ENVOI À L'API
+      const formData = new FormData();
+      formData.append("image", compressedFile, compressedFile.name);
+
       const response = await fetch(`${API_BASE_URL}/api/images`, {
         method: "POST",
         headers: {
@@ -139,8 +147,8 @@ export default function Form() {
       setStatus({ type: "success", message: "Image ajoutée à la galerie avec succès !" });
       setFile(null);
       setPreview(null);
-      
-      // Recharger la liste après ajout
+
+      // Recharger la liste après l'ajout
       fetchImages();
     } catch (err) {
       if (err instanceof Error) {
@@ -259,7 +267,7 @@ export default function Form() {
             disabled={isLoading || !file}
             className="w-full rounded-xl bg-navy-deep py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-gold hover:text-navy-deep disabled:opacity-50"
           >
-            {isLoading ? "Téléversement en cours..." : "Publier l'image"}
+            {isLoading ? "Compression & téléversement..." : "Publier l'image"}
           </button>
         </form>
 
