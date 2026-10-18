@@ -6,6 +6,8 @@ import InteractiveHub from"./components/sectio";
 import Filieres from "./components/Filieres";
 import Stats from "./components/Stats";
 import Gallery from "./components/Gallery";
+import TestimonialsSection from "./components/TestimonialsSection";
+
 import FAQ from "./components/FAQ";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
@@ -22,6 +24,7 @@ export default function App() {
       <Filieres />
       <Stats />
       <Gallery />
+      <TestimonialsSection />
       <FAQ />
       <Contact />
       <Footer />

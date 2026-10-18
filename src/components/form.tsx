@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type ChangeEvent, type FormEvent } from "react";
+import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import imageCompression from "browser-image-compression";
 
@@ -37,10 +37,14 @@ export default function AdminDashboard() {
   const [isFetchingComments, setIsFetchingComments] = useState(true);
   const [processingCommentId, setProcessingCommentId] = useState<number | null>(null);
 
-  // --- ÉTAT GLOBAL NOTIFICATION ---
+  // Édition de commentaire
+  const [editingComment, setEditingComment] = useState<CommentItem | null>(null);
+  const [editAuthor, setEditAuthor] = useState("");
+  const [editContent, setEditContent] = useState("");
+
+  // --- NOTIFICATIONS ---
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  // Formater URL Image
   const getImageUrl = (url: string) => {
     if (!url) return "";
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
@@ -50,57 +54,72 @@ export default function AdminDashboard() {
     return `${API_BASE_URL}${cleanPath}`;
   };
 
-  // --- CHARGEMENT DONNÉES ---
-  const fetchImages = useCallback(async () => {
+  // --- FETCH IMAGES HELPER (utilisé lors de l'upload) ---
+  const fetchImages = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/images`);
       if (response.ok) {
         const data = await response.json();
         setImages(data);
       }
-    } catch (err) {
-      console.error("Erreur images :", err);
+    } catch {
+      console.error("Erreur lors de la récupération des images");
     } finally {
       setIsFetchingImages(false);
     }
-  }, []);
+  };
 
-  const fetchComments = useCallback(async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/comments`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setComments(data);
-      }
-    } catch (err) {
-      console.error("Erreur commentaires :", err);
-    } finally {
-      setIsFetchingComments(false);
-    }
-  }, [navigate]);
-
+  // Initialisation globale lors du montage
   useEffect(() => {
-    fetchImages();
-    fetchComments();
-  }, [fetchImages, fetchComments]);
+    let isMounted = true;
+
+    const loadInitialData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      try {
+        const [imagesRes, commentsRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/images`),
+          fetch(`${API_BASE_URL}/api/admin/comments`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        if (isMounted && imagesRes.ok) {
+          const imgData = await imagesRes.json();
+          setImages(imgData);
+        }
+
+        if (isMounted && commentsRes.ok) {
+          const commentData = await commentsRes.json();
+          setComments(commentData);
+        }
+      } catch {
+        console.error("Erreur d'initialisation des données");
+      } finally {
+        if (isMounted) {
+          setIsFetchingImages(false);
+          setIsFetchingComments(false);
+        }
+      }
+    };
+
+    loadInitialData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [navigate]);
 
   // --- HANDLERS IMAGES ---
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
     setFile(selectedFile);
-    if (selectedFile) {
-      setPreview(URL.createObjectURL(selectedFile));
-    } else {
-      setPreview(null);
-    }
+    if (selectedFile) setPreview(URL.createObjectURL(selectedFile));
+    else setPreview(null);
   };
 
   const handleUploadImage = async (e: FormEvent) => {
@@ -109,21 +128,12 @@ export default function AdminDashboard() {
 
     setIsUploading(true);
     setStatus(null);
-
     const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+    if (!token) return navigate("/login");
 
     try {
-      const options = {
-        maxSizeMB: 2,
-        maxWidthOrHeight: 1920,
-        useWebWorker: true,
-      };
+      const options = { maxSizeMB: 2, maxWidthOrHeight: 1920, useWebWorker: true };
       const compressedFile = await imageCompression(file, options);
-
       const formData = new FormData();
       formData.append("image", compressedFile, compressedFile.name);
 
@@ -133,12 +143,8 @@ export default function AdminDashboard() {
         body: formData,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.error || "Échec de l'envoi de l'image.");
-      }
-
-      setStatus({ type: "success", message: "Image ajoutée avec succès !" });
+      if (!response.ok) throw new Error("Échec de l'envoi.");
+      setStatus({ type: "success", message: "Image publiée avec succès !" });
       setFile(null);
       setPreview(null);
       fetchImages();
@@ -150,29 +156,21 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteImage = async (id: string) => {
-    if (!window.confirm("Voulez-vous vraiment supprimer cette image ?")) return;
-
+    if (!window.confirm("Supprimer cette image ?")) return;
     const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+    if (!token) return navigate("/login");
 
     setDeletingImageId(id);
-    setStatus(null);
-
     try {
       const response = await fetch(`${API_BASE_URL}/api/images/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (!response.ok) throw new Error("Échec de la suppression.");
-
+      if (!response.ok) throw new Error("Erreur suppression.");
       setImages((prev) => prev.filter((img) => img.id !== id));
-      setStatus({ type: "success", message: "Image supprimée avec succès !" });
-    } catch (err) {
-      setStatus({ type: "error", message: "Erreur lors de la suppression de l'image." });
+      setStatus({ type: "success", message: "Image supprimée !" });
+    } catch {
+      setStatus({ type: "error", message: "Erreur lors de la suppression." });
     } finally {
       setDeletingImageId(null);
     }
@@ -181,61 +179,65 @@ export default function AdminDashboard() {
   // --- HANDLERS COMMENTAIRES ---
   const handleApproveComment = async (id: number) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+    if (!token) return navigate("/login");
 
     setProcessingCommentId(id);
-    setStatus(null);
-
     try {
       const response = await fetch(`${API_BASE_URL}/api/admin/comments/${id}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: "approved" }),
       });
-
-      if (!response.ok) throw new Error("Échec de l'approbation.");
-
-      setComments((prev) =>
-        prev.map((com) => (com.id === id ? { ...com, status: "approved" } : com))
-      );
+      if (!response.ok) throw new Error("Erreur validation.");
+      setComments((prev) => prev.map((c) => (c.id === id ? { ...c, status: "approved" } : c)));
       setStatus({ type: "success", message: "Commentaire approuvé !" });
-    } catch (err) {
-      setStatus({ type: "error", message: "Erreur lors de la validation du commentaire." });
+    } catch {
+      setStatus({ type: "error", message: "Erreur d'approbation." });
     } finally {
       setProcessingCommentId(null);
     }
   };
 
-  const handleDeleteComment = async (id: number) => {
-    if (!window.confirm("Voulez-vous vraiment supprimer ce commentaire ?")) return;
+  const handleUpdateComment = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingComment) return;
 
     const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
+    if (!token) return navigate("/login");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/comments/${editingComment.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ author: editAuthor, content: editContent }),
+      });
+      if (!response.ok) throw new Error("Mise à jour échouée.");
+      setComments((prev) =>
+        prev.map((c) => (c.id === editingComment.id ? { ...c, author: editAuthor, content: editContent } : c))
+      );
+      setStatus({ type: "success", message: "Commentaire mis à jour !" });
+      setEditingComment(null);
+    } catch {
+      setStatus({ type: "error", message: "Impossible de modifier le commentaire." });
     }
+  };
+
+  const handleDeleteComment = async (id: number) => {
+    if (!window.confirm("Supprimer ce commentaire ?")) return;
+    const token = localStorage.getItem("token");
+    if (!token) return navigate("/login");
 
     setProcessingCommentId(id);
-    setStatus(null);
-
     try {
       const response = await fetch(`${API_BASE_URL}/api/admin/comments/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (!response.ok) throw new Error("Échec de la suppression.");
-
-      setComments((prev) => prev.filter((com) => com.id !== id));
-      setStatus({ type: "success", message: "Commentaire supprimé avec succès !" });
-    } catch (err) {
-      setStatus({ type: "error", message: "Erreur lors de la suppression du commentaire." });
+      if (!response.ok) throw new Error("Erreur suppression.");
+      setComments((prev) => prev.filter((c) => c.id !== id));
+      setStatus({ type: "success", message: "Commentaire supprimé !" });
+    } catch {
+      setStatus({ type: "error", message: "Erreur suppression." });
     } finally {
       setProcessingCommentId(null);
     }
@@ -246,28 +248,27 @@ export default function AdminDashboard() {
     navigate("/login");
   };
 
-  const pendingCommentsCount = comments.filter((c) => c.status === "pending").length;
+  const pendingComments = comments.filter((c) => c.status === "pending");
+  const approvedComments = comments.filter((c) => c.status === "approved");
 
   return (
-    <div className="flex min-h-screen bg-[#DDE6ED] font-sans text-slate-800">
+    <div className="flex min-h-screen bg-paper font-sans text-navy-deep">
       
-      {/* ------------------------------------------------------------------ */}
-      {/* SIDEBAR LATÉRALE                                                  */}
-      {/* ------------------------------------------------------------------ */}
-      <aside className="w-64 bg-navy-deep text-white flex flex-col justify-between p-6 shrink-0 shadow-xl">
+      {/* SIDEBAR LATÉRALE */}
+      <aside className="w-64 bg-navy-deep text-white flex flex-col justify-between p-6 shrink-0 shadow-2xl">
         <div className="space-y-8">
           <div className="flex items-center space-x-3 px-2">
             <div className="w-3 h-8 bg-gold rounded-full"></div>
             <div>
               <h2 className="text-xl font-extrabold tracking-wide text-white">Saint Charles</h2>
-              <p className="text-xs text-gold/80">Espace Admin</p>
+              <p className="text-xs text-gold/80 font-medium">Espace Admin</p>
             </div>
           </div>
 
           <nav className="space-y-2">
             <button
               onClick={() => setActiveTab("images")}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 ${
                 activeTab === "images"
                   ? "bg-gold text-navy-deep font-bold shadow-md"
                   : "hover:bg-white/10 text-white/80 hover:text-white"
@@ -281,16 +282,16 @@ export default function AdminDashboard() {
 
             <button
               onClick={() => setActiveTab("comments")}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 ${
                 activeTab === "comments"
                   ? "bg-gold text-navy-deep font-bold shadow-md"
                   : "hover:bg-white/10 text-white/80 hover:text-white"
               }`}
             >
               <span>Commentaires</span>
-              {pendingCommentsCount > 0 ? (
-                <span className="text-xs font-bold bg-orange-500 text-white px-2 py-0.5 rounded-full animate-pulse">
-                  {pendingCommentsCount}
+              {pendingComments.length > 0 ? (
+                <span className="text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full animate-pulse">
+                  {pendingComments.length}
                 </span>
               ) : (
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${activeTab === "comments" ? "bg-navy-deep text-white" : "bg-white/10 text-white"}`}>
@@ -304,115 +305,109 @@ export default function AdminDashboard() {
         <div className="pt-6 border-t border-white/10">
           <button
             onClick={handleLogout}
-            className="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-rose-400 hover:bg-rose-500/10 transition-all duration-200"
+            className="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-red-400 hover:bg-red-500/10 transition-all duration-200"
           >
             Déconnexion
           </button>
         </div>
       </aside>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* CONTENU PRINCIPAL (Zone Droite avec couleurs du Dashboard)        */}
-      {/* ------------------------------------------------------------------ */}
-      <main className="flex-1 p-8 overflow-y-auto space-y-6">
+      {/* CONTENU PRINCIPAL - Fond Marron Chaud Translucide */}
+      <main className="flex-1 p-8 overflow-y-auto space-y-6 bg-[#3B2F2F]/10 backdrop-blur-sm">
         
-        {/* Banner de titre */}
-        <div className="flex items-center justify-between bg-white px-8 py-5 rounded-2xl shadow-sm border border-slate-200">
+        {/* Banner Header */}
+        <div className="flex items-center justify-between bg-white px-8 py-5 rounded-2xl shadow-sm border border-navy/10">
           <div>
-            <h1 className="text-2xl font-bold text-[#1E1E2E]">
+            <h1 className="text-2xl font-extrabold text-navy-deep">
               {activeTab === "images" ? "Gestion du Portfolio & Galerie" : "Modération des Commentaires"}
             </h1>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-navy/60 mt-1">
               {activeTab === "images" 
-                ? "Téléversez de nouvelles photos et gérez la galerie publique" 
-                : "Approuvez ou supprimez les commentaires soumis par les visiteurs"}
+                ? "Téléversez et administrez les visuels publics" 
+                : "Consultez, modifiez, validez ou supprimez les commentaires"}
             </p>
           </div>
-          {activeTab === "comments" && pendingCommentsCount > 0 && (
-            <div className="bg-orange-100 border border-orange-200 text-orange-700 text-xs font-bold px-4 py-2 rounded-xl">
-              {pendingCommentsCount} en attente de validation
+          {activeTab === "comments" && pendingComments.length > 0 && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold px-4 py-2 rounded-xl">
+              {pendingComments.length} en attente de modération
             </div>
           )}
         </div>
 
-        {/* Feedback notification */}
+        {/* Banner status */}
         {status && (
           <div
             className={`p-4 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm ${
-              status.type === "success"
-                ? "bg-emerald-500 text-white"
-                : "bg-rose-500 text-white"
+              status.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
             }`}
           >
             {status.message}
           </div>
         )}
 
-        {/* ================================================================ */}
-        {/* ONGLET 1 : GESTION DES IMAGES                                    */}
-        {/* ================================================================ */}
+        {/* ONGLET 1 : IMAGES */}
         {activeTab === "images" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            {/* Formulaire d'upload */}
-            <div className="lg:col-span-1 bg-white rounded-2xl p-6 shadow-sm border border-slate-200 h-fit space-y-5">
-              <h2 className="text-base font-bold text-[#1E1E2E] border-b border-slate-100 pb-3">
-                Publier une image
+            {/* Formulaire de publication */}
+            <div className="lg:col-span-1 bg-white rounded-2xl p-6 shadow-sm border border-navy/10 h-fit space-y-5">
+              <h2 className="text-base font-bold text-navy-deep border-b border-navy/10 pb-3">
+                Ajouter une image
               </h2>
 
               <form onSubmit={handleUploadImage} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-semibold text-navy/70 uppercase tracking-wider mb-2">
                     Fichier image
                   </label>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleFileChange}
-                    className="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#1E1E2E] file:text-orange-400 hover:file:bg-[#2D2B52] cursor-pointer"
+                    className="w-full text-xs text-navy/70 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-navy-deep file:text-white hover:file:bg-gold hover:file:text-navy-deep cursor-pointer"
                     required
                   />
                 </div>
 
                 {preview && (
                   <div className="mt-3">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Aperçu sélectionné :</p>
-                    <img src={preview} alt="Aperçu" className="h-40 w-full object-cover rounded-xl border border-slate-200" />
+                    <p className="text-[10px] font-bold text-navy/60 uppercase tracking-wider mb-1">Aperçu :</p>
+                    <img src={preview} alt="Aperçu" className="h-40 w-full object-cover rounded-xl border border-navy/10" />
                   </div>
                 )}
 
                 <button
                   type="submit"
                   disabled={isUploading || !file}
-                  className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white text-sm font-bold py-3 rounded-xl transition-all duration-200 shadow-md shadow-orange-500/20"
+                  className="w-full bg-gradient-to-r from-navy-deep to-[#1E293B] hover:from-gold hover:to-amber-500 text-white hover:text-navy-deep border border-amber-500/30 text-sm font-bold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-gold/20 disabled:opacity-50"
                 >
-                  {isUploading ? "Traitement & Envoi..." : "Envoyer l'image"}
+                  {isUploading ? "Compression & Envoi..." : "Publier l'image"}
                 </button>
               </form>
             </div>
 
-            {/* Grille des images */}
-            <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
-              <h2 className="text-base font-bold text-[#1E1E2E] border-b border-slate-100 pb-3">
+            {/* Conteneur Galerie Actuelle - FOND BLANC */}
+            <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-navy/10 space-y-4">
+              <h2 className="text-base font-bold text-navy-deep border-b border-navy/10 pb-3">
                 Galerie Actuelle ({images.length})
               </h2>
 
               {isFetchingImages ? (
-                <div className="text-center py-12 text-xs text-slate-400 font-medium">Chargement des images...</div>
+                <div className="text-center py-12 text-xs text-navy/50 font-medium">Chargement des images...</div>
               ) : images.length === 0 ? (
-                <div className="text-center py-12 text-xs text-slate-400 font-medium">Aucune image publiée dans la galerie.</div>
+                <div className="text-center py-12 text-xs text-navy/50 font-medium">Aucune image publiée.</div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {images.map((img) => (
-                    <div key={img.id} className="group bg-[#1E1E2E] rounded-xl overflow-hidden border border-slate-800 flex flex-col justify-between shadow-sm">
+                    <div key={img.id} className="group bg-paper rounded-xl overflow-hidden border border-navy/10 flex flex-col justify-between shadow-sm hover:border-gold transition-all duration-300">
                       <div className="h-36 overflow-hidden">
-                        <img src={getImageUrl(img.url)} alt={img.title || "Galerie"} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300" />
+                        <img src={getImageUrl(img.url)} alt={img.title || "Galerie public"} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300" />
                       </div>
                       <div className="p-3">
                         <button
                           onClick={() => handleDeleteImage(img.id)}
                           disabled={deletingImageId === img.id}
-                          className="w-full bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 disabled:opacity-50"
+                          className="w-full bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 disabled:opacity-50"
                         >
                           {deletingImageId === img.id ? "Suppression..." : "Supprimer"}
                         </button>
@@ -426,80 +421,147 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ================================================================ */}
-        {/* ONGLET 2 : MODÉRATION DES COMMENTAIRES                           */}
-        {/* ================================================================ */}
+        {/* ONGLET 2 : COMMENTAIRES */}
         {activeTab === "comments" && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
-            <h2 className="text-base font-bold text-[#1E1E2E] border-b border-slate-100 pb-3">
-              Liste des commentaires enregistrés
-            </h2>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-white p-5 rounded-2xl border border-navy/10 shadow-sm flex justify-between items-center">
+                <div>
+                  <p className="text-xs text-navy/60 font-semibold uppercase">Total Commentaires</p>
+                  <p className="text-2xl font-extrabold text-navy-deep mt-1">{comments.length}</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-navy-deep/5 text-navy-deep font-bold flex items-center justify-center">💬</div>
+              </div>
+              <div className="bg-white p-5 rounded-2xl border border-navy/10 shadow-sm flex justify-between items-center">
+                <div>
+                  <p className="text-xs text-amber-700 font-semibold uppercase">En attente</p>
+                  <p className="text-2xl font-extrabold text-amber-600 mt-1">{pendingComments.length}</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 font-bold flex items-center justify-center">⏳</div>
+              </div>
+              <div className="bg-white p-5 rounded-2xl border border-navy/10 shadow-sm flex justify-between items-center">
+                <div>
+                  <p className="text-xs text-emerald-700 font-semibold uppercase">Approuvés</p>
+                  <p className="text-2xl font-extrabold text-emerald-600 mt-1">{approvedComments.length}</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center">✅</div>
+              </div>
+            </div>
 
-            {isFetchingComments ? (
-              <div className="text-center py-12 text-xs text-slate-400 font-medium">Chargement des commentaires...</div>
-            ) : comments.length === 0 ? (
-              <div className="text-center py-12 text-xs text-slate-400 font-medium">Aucun commentaire soumis.</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-slate-400 text-[11px] uppercase tracking-wider bg-slate-50">
-                      <th className="p-3 rounded-l-xl">Auteur</th>
-                      <th className="p-3">Message</th>
-                      <th className="p-3">Statut</th>
-                      <th className="p-3">Date</th>
-                      <th className="p-3 text-right rounded-r-xl">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-xs">
-                    {comments.map((comment) => (
-                      <tr key={comment.id} className="hover:bg-slate-50/80 transition-all duration-150">
-                        <td className="p-3 font-bold text-[#1E1E2E] whitespace-nowrap">{comment.author}</td>
-                        <td className="p-3 text-slate-600 max-w-sm truncate" title={comment.content}>
-                          {comment.content}
-                        </td>
-                        <td className="p-3 whitespace-nowrap">
+            {editingComment && (
+              <form onSubmit={handleUpdateComment} className="bg-white p-6 rounded-2xl border-2 border-gold shadow-md space-y-4">
+                <div className="flex justify-between items-center border-b border-navy/10 pb-3">
+                  <h3 className="text-sm font-extrabold text-navy-deep">Modifier le commentaire #{editingComment.id}</h3>
+                  <button type="button" onClick={() => setEditingComment(null)} className="text-xs font-bold text-red-500 hover:underline">Annuler</button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-navy/70 mb-1">Nom de l'auteur</label>
+                    <input
+                      type="text"
+                      value={editAuthor}
+                      onChange={(e) => setEditAuthor(e.target.value)}
+                      className="w-full text-xs p-2.5 rounded-xl border border-navy/20 bg-paper focus:outline-none focus:border-navy-deep"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-navy/70 mb-1">Commentaire (max 500 chars)</label>
+                    <textarea
+                      value={editContent}
+                      maxLength={500}
+                      onChange={(e) => setEditContent(e.target.value)}
+                      className="w-full text-xs p-2.5 rounded-xl border border-navy/20 bg-paper focus:outline-none focus:border-navy-deep"
+                      rows={2}
+                      required
+                    />
+                  </div>
+                </div>
+                <button type="submit" className="bg-navy-deep text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-gold hover:text-navy-deep transition">
+                  Enregistrer les modifications
+                </button>
+              </form>
+            )}
+
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-navy/10 space-y-4">
+              <h2 className="text-base font-bold text-navy-deep border-b border-navy/10 pb-3">
+                Gestion des commentaires enregistrés
+              </h2>
+
+              {isFetchingComments ? (
+                <div className="text-center py-12 text-xs text-navy/50 font-medium">Chargement des commentaires...</div>
+              ) : comments.length === 0 ? (
+                <div className="text-center py-12 text-xs text-navy/50 font-medium">Aucun commentaire soumis.</div>
+              ) : (
+                <div className="space-y-3">
+                  {comments.map((comment) => (
+                    <div
+                      key={comment.id}
+                      className={`p-4 rounded-xl border transition-all duration-150 flex flex-col md:flex-row md:items-center md:justify-between gap-4 ${
+                        comment.status === "pending"
+                          ? "bg-amber-50/40 border-amber-200"
+                          : "bg-paper border-navy/10"
+                      }`}
+                    >
+                      <div className="space-y-1 max-w-2xl">
+                        <div className="flex items-center space-x-3">
+                          <span className="font-extrabold text-xs text-navy-deep">{comment.author}</span>
                           <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${
+                            className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
                               comment.status === "approved"
-                                ? "bg-emerald-100 text-emerald-700"
-                                : "bg-orange-100 text-orange-600"
+                                ? "bg-emerald-100 text-emerald-800"
+                                : "bg-amber-100 text-amber-800"
                             }`}
                           >
                             {comment.status === "approved" ? "Approuvé" : "En attente"}
                           </span>
-                        </td>
-                        <td className="p-3 text-slate-400 whitespace-nowrap">
-                          {new Date(comment.createdAt).toLocaleDateString("fr-FR", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </td>
-                        <td className="p-3 text-right space-x-2 whitespace-nowrap">
-                          {comment.status === "pending" && (
-                            <button
-                              onClick={() => handleApproveComment(comment.id)}
-                              disabled={processingCommentId === comment.id}
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 disabled:opacity-50 shadow-sm"
-                            >
-                              {processingCommentId === comment.id ? "..." : "Approuver"}
-                            </button>
-                          )}
+                          <span className="text-[10px] text-navy/50">
+                            {new Date(comment.createdAt).toLocaleDateString("fr-FR", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
+                        <p className="text-xs text-navy/80 leading-relaxed">{comment.content}</p>
+                      </div>
+
+                      <div className="flex items-center space-x-2 shrink-0">
+                        {comment.status === "pending" && (
                           <button
-                            onClick={() => handleDeleteComment(comment.id)}
+                            onClick={() => handleApproveComment(comment.id)}
                             disabled={processingCommentId === comment.id}
-                            className="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 disabled:opacity-50"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition disabled:opacity-50"
                           >
-                            {processingCommentId === comment.id ? "..." : "Supprimer"}
+                            Approuver
                           </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                        )}
+                        <button
+                          onClick={() => {
+                            setEditingComment(comment);
+                            setEditAuthor(comment.author);
+                            setEditContent(comment.content);
+                          }}
+                          className="bg-white border border-navy/20 text-navy-deep hover:bg-navy-deep hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition"
+                        >
+                          Éditer
+                        </button>
+                        <button
+                          onClick={() => handleDeleteComment(comment.id)}
+                          disabled={processingCommentId === comment.id}
+                          className="bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition disabled:opacity-50"
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
           </div>
         )}
 
