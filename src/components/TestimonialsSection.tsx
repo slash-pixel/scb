@@ -26,7 +26,6 @@ export default function TestimonialsSection() {
   const [selectedComment, setSelectedComment] = useState<CommentItem | null>(null);
 
   // --- Carrousel ---
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -63,24 +62,38 @@ export default function TestimonialsSection() {
     };
   }, []);
 
-  // Défilement automatique toutes les 5 secondes
+  // Défilement automatique toutes les 5 secondes (basé sur le scroll)
   useEffect(() => {
-    if (comments.length <= 1 || isPaused) return;
+    if (comments.length <= 1 || isPaused || !carouselRef.current) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % comments.length);
+      const container = carouselRef.current;
+      if (!container) return;
+
+      const scrollAmount = container.clientWidth;
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+
+      if (container.scrollLeft >= maxScrollLeft - 10) {
+        container.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        container.scrollBy({ left: scrollAmount > 400 ? 400 : scrollAmount, behavior: "smooth" });
+      }
     }, 5000);
 
     return () => clearInterval(interval);
   }, [comments.length, isPaused]);
 
-  // Navigation manuelle carrousel
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? comments.length - 1 : prev - 1));
+  // Navigation manuelle carrousel par défilement
+  const handleScrollPrev = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: -350, behavior: "smooth" });
+    }
   };
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % comments.length);
+  const handleScrollNext = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: 350, behavior: "smooth" });
+    }
   };
 
   // Soumission d'un nouvel avis
@@ -141,30 +154,52 @@ export default function TestimonialsSection() {
   };
 
   return (
-    <section className="w-full max-w-6xl mx-auto px-4 py-12 font-sans">
+    <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14 font-sans overflow-hidden">
       
-      {/* SECTION EN-TÊTE */}
+      {/* SECTION EN-TÊTE AVEC FLÈCHES DE DIRECTION INTÉGRÉES */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h2 className="text-3xl font-extrabold text-navy-deep">Ce que disent nos élèves</h2>
-          <p className="text-sm text-slate-600 mt-1">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-navy-deep">Ce que disent nos élèves</h2>
+          <p className="text-xs sm:text-sm text-slate-600 mt-1">
             Basé sur {comments.length} avis publiés
           </p>
         </div>
 
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-navy-deep hover:opacity-90 text-white px-6 py-3 rounded-full text-sm font-bold shadow-md transition-all duration-200 self-start sm:self-auto"
-        >
-          Laisser un avis
-        </button>
+        <div className="flex items-center justify-between sm:justify-end gap-3">
+          {/* Flèches de direction interactives */}
+          {comments.length > 1 && (
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-full border border-slate-200/60 shadow-xs">
+              <button
+                onClick={handleScrollPrev}
+                className="w-9 h-9 bg-white shadow-xs rounded-full flex items-center justify-center text-slate-700 hover:bg-navy-deep hover:text-white transition-all text-sm font-bold cursor-pointer"
+                aria-label="Avis précédent"
+              >
+                &#8249;
+              </button>
+              <button
+                onClick={handleScrollNext}
+                className="w-9 h-9 bg-white shadow-xs rounded-full flex items-center justify-center text-slate-700 hover:bg-navy-deep hover:text-white transition-all text-sm font-bold cursor-pointer"
+                aria-label="Avis suivant"
+              >
+                &#8250;
+              </button>
+            </div>
+          )}
+
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-navy-deep hover:opacity-90 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold shadow-md transition-all duration-200 cursor-pointer"
+          >
+            Laisser un avis
+          </button>
+        </div>
       </div>
 
       {/* CARROUSEL DES AVIS */}
       {isLoading ? (
-        <div className="text-center py-16 text-slate-400">Chargement des avis...</div>
+        <div className="text-center py-16 text-slate-400 text-sm">Chargement des avis...</div>
       ) : comments.length === 0 ? (
-        <div className="text-center py-16 bg-slate-50 rounded-3xl text-slate-500">
+        <div className="text-center py-16 bg-slate-50 rounded-3xl text-slate-500 text-sm px-4">
           Aucun avis pour le moment. Soyez le premier à en laisser un !
         </div>
       ) : (
@@ -173,81 +208,59 @@ export default function TestimonialsSection() {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          {/* Bouton Gauche */}
-          <button
-            onClick={handlePrev}
-            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-50 hover:scale-105 transition-all border border-slate-100"
-            aria-label="Avis précédent"
+          {/* Conteneur Carrousel Scroll-Snap (Swipeable sur mobile) */}
+          <div 
+            ref={carouselRef}
+            className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-4 pb-4 pt-1 px-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            &#8249;
-          </button>
+            {comments.map((item) => (
+              <div
+                key={item.id}
+                className="w-full sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)] shrink-0 snap-start flex"
+              >
+                <div className="bg-[#F8F9FA] hover:bg-white rounded-3xl p-5 sm:p-6 w-full border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                  <div>
+                    {/* Contenu du commentaire */}
+                    <p className="text-slate-700 text-xs sm:text-sm leading-relaxed line-clamp-4">
+                      {item.content}
+                    </p>
+                    
+                    {item.content.length > 120 && (
+                      <button
+                        onClick={() => setSelectedComment(item)}
+                        className="text-xs font-bold text-navy-deep mt-2 hover:underline inline-block cursor-pointer"
+                      >
+                        Lire la suite...
+                      </button>
+                    )}
+                  </div>
 
-          {/* Grille / Carrousel */}
-          <div className="overflow-hidden rounded-3xl" ref={carouselRef}>
-            <div
-              className="flex transition-transform duration-700 ease-in-out"
-              style={{
-                transform: `translateX(-${currentIndex * (100 / Math.min(comments.length, 3))}%)`,
-              }}
-            >
-              {comments.map((item) => (
-                <div
-                  key={item.id}
-                  className="w-full sm:w-1/2 lg:w-1/3 shrink-0 p-3"
-                >
-                  <div className="bg-[#F8F9FA] hover:bg-white rounded-3xl p-6 h-full border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                      {/* Contenu du commentaire */}
-                      <p className="text-slate-700 text-sm leading-relaxed line-clamp-4">
-                        {item.content}
-                      </p>
-                      
-                      {item.content.length > 120 && (
-                        <button
-                          onClick={() => setSelectedComment(item)}
-                          className="text-xs font-bold text-navy-deep mt-2 hover:underline inline-block"
-                        >
-                          Lire la suite...
-                        </button>
-                      )}
+                  {/* Auteur & Métadonnées */}
+                  <div className="flex items-center space-x-3 mt-6 pt-4 border-t border-slate-200/50">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-navy-deep text-white font-bold flex items-center justify-center uppercase text-xs sm:text-sm shrink-0">
+                      {item.author.charAt(0)}
                     </div>
-
-                    {/* Auteur & Métadonnées */}
-                    <div className="flex items-center space-x-3 mt-6 pt-4 border-t border-slate-200/50">
-                      <div className="w-10 h-10 rounded-full bg-navy-deep text-white font-bold flex items-center justify-center uppercase text-sm shrink-0">
-                        {item.author.charAt(0)}
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-xs text-navy-deep">{item.author}</h4>
-                        <span className="text-[11px] text-slate-400">{getRelativeTime(item.createdAt)}</span>
-                      </div>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-xs text-navy-deep truncate">{item.author}</h4>
+                      <span className="text-[10px] sm:text-[11px] text-slate-400">{getRelativeTime(item.createdAt)}</span>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-
-          {/* Bouton Droit */}
-          <button
-            onClick={handleNext}
-            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-50 hover:scale-105 transition-all border border-slate-100"
-            aria-label="Avis suivant"
-          >
-            &#8250;
-          </button>
         </div>
       )}
 
       {/* MODAL FORMULAIRE ("Laisser un avis") */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-6 relative animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center border-b pb-4">
-              <h3 className="text-xl font-bold text-navy-deep">Donnez votre avis</h3>
+          <div className="bg-white rounded-3xl p-5 sm:p-8 max-w-md w-full shadow-2xl space-y-5 relative max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h3 className="text-lg sm:text-xl font-bold text-navy-deep">Donnez votre avis</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold text-lg"
+                className="text-slate-400 hover:text-slate-600 font-bold text-lg p-1 cursor-pointer"
               >
                 ✕
               </button>
@@ -274,7 +287,7 @@ export default function TestimonialsSection() {
                   onChange={(e) => setAuthorName(e.target.value)}
                   placeholder="Ex. Jean Dupont"
                   maxLength={50}
-                  className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-navy-deep"
+                  className="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-navy-deep"
                   required
                 />
               </div>
@@ -295,7 +308,7 @@ export default function TestimonialsSection() {
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Partagez votre expérience..."
                   rows={4}
-                  className="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-navy-deep resize-none"
+                  className="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-navy-deep resize-none"
                   required
                 />
               </div>
@@ -304,14 +317,14 @@ export default function TestimonialsSection() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800"
+                  className="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 cursor-pointer"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting || wordCount > MAX_WORDS}
-                  className="bg-navy-deep hover:opacity-90 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition shadow-md disabled:opacity-50"
+                  className="bg-navy-deep hover:opacity-90 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition shadow-md disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? "Envoi en cours..." : "Envoyer l'avis"}
                 </button>
@@ -324,33 +337,33 @@ export default function TestimonialsSection() {
       {/* MODAL LECTURE COMPLÈTE ("Lire la suite") */}
       {selectedComment && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-4 relative">
+          <div className="bg-white rounded-3xl p-5 sm:p-8 max-w-lg w-full shadow-2xl space-y-4 relative max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b pb-3">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-navy-deep text-white font-bold flex items-center justify-center uppercase">
+              <div className="flex items-center space-x-3 min-w-0 pr-2">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-navy-deep text-white font-bold flex items-center justify-center uppercase shrink-0 text-xs sm:text-sm">
                   {selectedComment.author.charAt(0)}
                 </div>
-                <div>
-                  <h4 className="font-bold text-sm text-navy-deep">{selectedComment.author}</h4>
-                  <span className="text-[11px] text-slate-400">{getRelativeTime(selectedComment.createdAt)}</span>
+                <div className="min-w-0">
+                  <h4 className="font-bold text-xs sm:text-sm text-navy-deep truncate">{selectedComment.author}</h4>
+                  <span className="text-[10px] sm:text-[11px] text-slate-400">{getRelativeTime(selectedComment.createdAt)}</span>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedComment(null)}
-                className="text-slate-400 hover:text-slate-600 font-bold text-lg"
+                className="text-slate-400 hover:text-slate-600 font-bold text-lg p-1 cursor-pointer shrink-0"
               >
                 ✕
               </button>
             </div>
 
-            <p className="text-slate-700 text-sm leading-relaxed max-h-60 overflow-y-auto pr-2">
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed max-h-60 overflow-y-auto pr-2">
               {selectedComment.content}
             </p>
 
             <div className="text-right pt-2">
               <button
                 onClick={() => setSelectedComment(null)}
-                className="bg-slate-100 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-200"
+                className="bg-slate-100 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-200 cursor-pointer"
               >
                 Fermer
               </button>
