@@ -114,30 +114,30 @@ export default function Navbar() {
             : "1px solid transparent",
       }}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 flex items-center justify-between h-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 flex items-center justify-between h-16 sm:h-20">
         {/* LOGO */}
         <a
           href="/#accueil"
-          className="flex items-center gap-2.5 sm:gap-3 group min-w-0 transition-opacity duration-300 hover:opacity-80"
+          className="flex items-center gap-2 sm:gap-3 group min-w-0 transition-opacity duration-300 hover:opacity-80"
         >
           <img
             src="/galerie/logo-removebg-preview.png"
             alt="Logo Collège Catholique Saint Charles Borromée"
-            className="h-9 w-auto sm:h-11 shrink-0 object-contain rounded-full drop-shadow"
+            className="h-8 w-auto sm:h-11 shrink-0 object-contain rounded-full drop-shadow"
           />
 
           <span className="font-display text-white leading-tight min-w-0 drop-shadow">
-            <span className="block text-[0.55rem] sm:text-[0.65rem] tracking-[0.12em] sm:tracking-[0.2em] uppercase font-mono truncate opacity-90">
+            <span className="block text-[0.5rem] sm:text-[0.65rem] tracking-[0.1em] sm:tracking-[0.2em] uppercase font-mono truncate opacity-90">
               Collège Catholique
             </span>
-            <span className="block text-sm sm:text-lg font-semibold truncate">
+            <span className="block text-xs sm:text-lg font-semibold truncate">
               Saint Charles Borromée
             </span>
           </span>
         </a>
 
         {/* CONTENEUR NAVIGATION */}
-        <div className="flex items-center gap-3 sm:gap-5">
+        <div className="flex items-center gap-2 sm:gap-4 lg:gap-5">
           {/* Navigation Desktop */}
           <nav className="hidden lg:flex items-center gap-1">
             {LIENS.map((lien) => (
@@ -202,17 +202,19 @@ export default function Navbar() {
           </nav>
 
           {/* Traduction */}
-          <GoogleTranslate />
+          <div className="shrink-0">
+            <GoogleTranslate />
+          </div>
 
           {/* Bouton Menu Mobile */}
           <motion.button
             whileTap={{ scale: 0.85 }}
             onClick={() => setOpen((v) => !v)}
-            className="lg:hidden text-white hover:text-gold-soft transition-colors duration-300 p-2 -mr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded-md"
+            className="lg:hidden text-white hover:text-gold-soft transition-colors duration-300 p-1.5 -mr-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded-md"
             aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={open}
           >
-            {open ? <X size={26} /> : <Menu size={26} />}
+            {open ? <X size={24} /> : <Menu size={24} />}
           </motion.button>
         </div>
       </div>
@@ -225,9 +227,9 @@ export default function Navbar() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:hidden overflow-hidden bg-navy-deep border-t border-white/10"
+            className="lg:hidden overflow-hidden bg-navy-deep border-t border-white/10 shadow-xl"
           >
-            <div className="flex flex-col px-6 py-6 gap-1">
+            <div className="flex flex-col px-5 py-5 gap-1 max-h-[calc(100vh-5rem)] overflow-y-auto">
               {LIENS.map((lien, i) => (
                 <motion.a
                   key={lien.href}
@@ -238,7 +240,7 @@ export default function Navbar() {
                   exit={{ opacity: 0, x: -10 }}
                   whileHover={{ x: 6, color: "#fcd34d" }}
                   transition={{ duration: 0.3, delay: 0.04 * i }}
-                  className="py-3 text-base font-medium text-white/90 border-b border-white/5 last:border-none"
+                  className="py-3 text-sm sm:text-base font-medium text-white/90 border-b border-white/5 last:border-none"
                 >
                   {lien.label}
                 </motion.a>
@@ -274,7 +276,7 @@ export default function Navbar() {
                     : {}
                 }
                 transition={{ duration: 0.8, ease: "easeInOut" }}
-                className={`mt-3 flex items-center justify-center gap-2 rounded-full border border-gold px-5 py-3 text-center text-sm font-semibold transition-all duration-300 cursor-pointer ${
+                className={`mt-3 mb-2 flex items-center justify-center gap-2 rounded-full border border-gold px-5 py-3 text-center text-sm font-semibold transition-all duration-300 cursor-pointer ${
                   isAnimating
                     ? "bg-gold text-navy-deep"
                     : "bg-transparent text-gold hover:bg-gold hover:text-navy-deep"
