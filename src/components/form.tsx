@@ -54,7 +54,6 @@ export default function AdminDashboard() {
     return `${API_BASE_URL}${cleanPath}`;
   };
 
-  // --- FETCH IMAGES HELPER (utilisé lors de l'upload) ---
   const fetchImages = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/images`);
@@ -69,7 +68,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // Initialisation globale lors du montage
   useEffect(() => {
     let isMounted = true;
 
@@ -114,7 +112,6 @@ export default function AdminDashboard() {
     };
   }, [navigate]);
 
-  // --- HANDLERS IMAGES ---
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
     setFile(selectedFile);
@@ -176,7 +173,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // --- HANDLERS COMMENTAIRES ---
   const handleApproveComment = async (id: number) => {
     const token = localStorage.getItem("token");
     if (!token) return navigate("/login");
@@ -252,37 +248,46 @@ export default function AdminDashboard() {
   const approvedComments = comments.filter((c) => c.status === "approved");
 
   return (
-    <div className="flex min-h-screen bg-paper font-sans text-navy-deep">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-paper font-sans text-navy-deep">
       
-      {/* SIDEBAR LATÉRALE */}
-      <aside className="w-64 bg-navy-deep text-white flex flex-col justify-between p-6 shrink-0 shadow-2xl">
-        <div className="space-y-8">
-          <div className="flex items-center space-x-3 px-2">
-            <div className="w-3 h-8 bg-gold rounded-full"></div>
-            <div>
-              <h2 className="text-xl font-extrabold tracking-wide text-white">Saint Charles</h2>
-              <p className="text-xs text-gold/80 font-medium">Espace Admin</p>
+      {/* SIDEBAR RESPONSIVE */}
+      <aside className="w-full lg:w-64 bg-navy-deep text-white flex flex-col justify-between p-4 lg:p-6 shrink-0 shadow-2xl">
+        <div className="space-y-4 lg:space-y-8">
+          <div className="flex items-center justify-between lg:justify-start space-x-3 px-2">
+            <div className="flex items-center space-x-3">
+              <div className="w-3 h-8 bg-gold rounded-full"></div>
+              <div>
+                <h2 className="text-lg lg:text-xl font-extrabold tracking-wide text-white">Saint Charles</h2>
+                <p className="text-xs text-gold/80 font-medium">Espace Admin</p>
+              </div>
             </div>
+            {/* Bouton déconnexion mobile rapide */}
+            <button
+              onClick={handleLogout}
+              className="lg:hidden text-xs font-semibold text-red-400 bg-red-500/10 px-3 py-1.5 rounded-lg"
+            >
+              Quitter
+            </button>
           </div>
 
-          <nav className="space-y-2">
+          <nav className="flex flex-row lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0">
             <button
               onClick={() => setActiveTab("images")}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 ${
+              className={`flex-1 lg:flex-none flex items-center justify-between px-3 lg:px-4 py-2.5 lg:py-3 rounded-xl font-semibold text-xs lg:text-sm transition-all duration-200 whitespace-nowrap ${
                 activeTab === "images"
                   ? "bg-gold text-navy-deep font-bold shadow-md"
                   : "hover:bg-white/10 text-white/80 hover:text-white"
               }`}
             >
-              <span>Gestion Images</span>
-              <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${activeTab === "images" ? "bg-navy-deep text-white" : "bg-white/10 text-white"}`}>
+              <span>Images</span>
+              <span className={`text-[10px] lg:text-xs font-bold px-2 py-0.5 rounded-md ml-2 ${activeTab === "images" ? "bg-navy-deep text-white" : "bg-white/10 text-white"}`}>
                 {images.length}
               </span>
             </button>
 
             <button
               onClick={() => setActiveTab("comments")}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 ${
+              className={`flex-1 lg:flex-none flex items-center justify-between px-3 lg:px-4 py-2.5 lg:py-3 rounded-xl font-semibold text-xs lg:text-sm transition-all duration-200 whitespace-nowrap ${
                 activeTab === "comments"
                   ? "bg-gold text-navy-deep font-bold shadow-md"
                   : "hover:bg-white/10 text-white/80 hover:text-white"
@@ -290,11 +295,11 @@ export default function AdminDashboard() {
             >
               <span>Commentaires</span>
               {pendingComments.length > 0 ? (
-                <span className="text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full animate-pulse">
+                <span className="text-[10px] lg:text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full animate-pulse ml-2">
                   {pendingComments.length}
                 </span>
               ) : (
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${activeTab === "comments" ? "bg-navy-deep text-white" : "bg-white/10 text-white"}`}>
+                <span className={`text-[10px] lg:text-xs font-bold px-2 py-0.5 rounded-md ml-2 ${activeTab === "comments" ? "bg-navy-deep text-white" : "bg-white/10 text-white"}`}>
                   {comments.length}
                 </span>
               )}
@@ -302,7 +307,7 @@ export default function AdminDashboard() {
           </nav>
         </div>
 
-        <div className="pt-6 border-t border-white/10">
+        <div className="hidden lg:block pt-6 border-t border-white/10">
           <button
             onClick={handleLogout}
             className="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-red-400 hover:bg-red-500/10 transition-all duration-200"
@@ -312,13 +317,13 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* CONTENU PRINCIPAL - Fond Marron Chaud Translucide */}
-      <main className="flex-1 p-8 overflow-y-auto space-y-6 bg-[#3B2F2F]/10 backdrop-blur-sm">
+      {/* CONTENU PRINCIPAL */}
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto space-y-6 bg-[#3B2F2F]/10 backdrop-blur-sm">
         
         {/* Banner Header */}
-        <div className="flex items-center justify-between bg-white px-8 py-5 rounded-2xl shadow-sm border border-navy/10">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white p-5 lg:px-8 rounded-2xl shadow-sm border border-navy/10 gap-3">
           <div>
-            <h1 className="text-2xl font-extrabold text-navy-deep">
+            <h1 className="text-xl lg:text-2xl font-extrabold text-navy-deep">
               {activeTab === "images" ? "Gestion du Portfolio & Galerie" : "Modération des Commentaires"}
             </h1>
             <p className="text-xs text-navy/60 mt-1">
@@ -328,8 +333,8 @@ export default function AdminDashboard() {
             </p>
           </div>
           {activeTab === "comments" && pendingComments.length > 0 && (
-            <div className="bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold px-4 py-2 rounded-xl">
-              {pendingComments.length} en attente de modération
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold px-3 py-1.5 rounded-xl">
+              {pendingComments.length} en attente
             </div>
           )}
         </div>
@@ -350,7 +355,7 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             {/* Formulaire de publication */}
-            <div className="lg:col-span-1 bg-white rounded-2xl p-6 shadow-sm border border-navy/10 h-fit space-y-5">
+            <div className="lg:col-span-1 bg-white rounded-2xl p-5 lg:p-6 shadow-sm border border-navy/10 h-fit space-y-5">
               <h2 className="text-base font-bold text-navy-deep border-b border-navy/10 pb-3">
                 Ajouter une image
               </h2>
@@ -386,8 +391,8 @@ export default function AdminDashboard() {
               </form>
             </div>
 
-            {/* Conteneur Galerie Actuelle - FOND BLANC */}
-            <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-navy/10 space-y-4">
+            {/* Conteneur Galerie Actuelle */}
+            <div className="lg:col-span-2 bg-white rounded-2xl p-5 lg:p-6 shadow-sm border border-navy/10 space-y-4">
               <h2 className="text-base font-bold text-navy-deep border-b border-navy/10 pb-3">
                 Galerie Actuelle ({images.length})
               </h2>
@@ -425,31 +430,31 @@ export default function AdminDashboard() {
         {activeTab === "comments" && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white p-5 rounded-2xl border border-navy/10 shadow-sm flex justify-between items-center">
+              <div className="bg-white p-4 lg:p-5 rounded-2xl border border-navy/10 shadow-sm flex justify-between items-center">
                 <div>
-                  <p className="text-xs text-navy/60 font-semibold uppercase">Total Commentaires</p>
-                  <p className="text-2xl font-extrabold text-navy-deep mt-1">{comments.length}</p>
+                  <p className="text-xs text-navy/60 font-semibold uppercase">Total</p>
+                  <p className="text-xl lg:text-2xl font-extrabold text-navy-deep mt-1">{comments.length}</p>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-navy-deep/5 text-navy-deep font-bold flex items-center justify-center">💬</div>
               </div>
-              <div className="bg-white p-5 rounded-2xl border border-navy/10 shadow-sm flex justify-between items-center">
+              <div className="bg-white p-4 lg:p-5 rounded-2xl border border-navy/10 shadow-sm flex justify-between items-center">
                 <div>
                   <p className="text-xs text-amber-700 font-semibold uppercase">En attente</p>
-                  <p className="text-2xl font-extrabold text-amber-600 mt-1">{pendingComments.length}</p>
+                  <p className="text-xl lg:text-2xl font-extrabold text-amber-600 mt-1">{pendingComments.length}</p>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 font-bold flex items-center justify-center">⏳</div>
               </div>
-              <div className="bg-white p-5 rounded-2xl border border-navy/10 shadow-sm flex justify-between items-center">
+              <div className="bg-white p-4 lg:p-5 rounded-2xl border border-navy/10 shadow-sm flex justify-between items-center">
                 <div>
                   <p className="text-xs text-emerald-700 font-semibold uppercase">Approuvés</p>
-                  <p className="text-2xl font-extrabold text-emerald-600 mt-1">{approvedComments.length}</p>
+                  <p className="text-xl lg:text-2xl font-extrabold text-emerald-600 mt-1">{approvedComments.length}</p>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center">✅</div>
               </div>
             </div>
 
             {editingComment && (
-              <form onSubmit={handleUpdateComment} className="bg-white p-6 rounded-2xl border-2 border-gold shadow-md space-y-4">
+              <form onSubmit={handleUpdateComment} className="bg-white p-5 lg:p-6 rounded-2xl border-2 border-gold shadow-md space-y-4">
                 <div className="flex justify-between items-center border-b border-navy/10 pb-3">
                   <h3 className="text-sm font-extrabold text-navy-deep">Modifier le commentaire #{editingComment.id}</h3>
                   <button type="button" onClick={() => setEditingComment(null)} className="text-xs font-bold text-red-500 hover:underline">Annuler</button>
@@ -483,7 +488,7 @@ export default function AdminDashboard() {
               </form>
             )}
 
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-navy/10 space-y-4">
+            <div className="bg-white rounded-2xl p-5 lg:p-6 shadow-sm border border-navy/10 space-y-4">
               <h2 className="text-base font-bold text-navy-deep border-b border-navy/10 pb-3">
                 Gestion des commentaires enregistrés
               </h2>
@@ -497,14 +502,14 @@ export default function AdminDashboard() {
                   {comments.map((comment) => (
                     <div
                       key={comment.id}
-                      className={`p-4 rounded-xl border transition-all duration-150 flex flex-col md:flex-row md:items-center md:justify-between gap-4 ${
+                      className={`p-4 rounded-xl border transition-all duration-150 flex flex-col gap-3 ${
                         comment.status === "pending"
                           ? "bg-amber-50/40 border-amber-200"
                           : "bg-paper border-navy/10"
                       }`}
                     >
-                      <div className="space-y-1 max-w-2xl">
-                        <div className="flex items-center space-x-3">
+                      <div className="space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
                           <span className="font-extrabold text-xs text-navy-deep">{comment.author}</span>
                           <span
                             className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
@@ -528,7 +533,7 @@ export default function AdminDashboard() {
                         <p className="text-xs text-navy/80 leading-relaxed">{comment.content}</p>
                       </div>
 
-                      <div className="flex items-center space-x-2 shrink-0">
+                      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-navy/5">
                         {comment.status === "pending" && (
                           <button
                             onClick={() => handleApproveComment(comment.id)}
