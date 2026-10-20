@@ -118,19 +118,9 @@ export default function GalleryPage() {
               >
                 <img 
                   src={getImageUrl(photo.url)} 
-                  alt={photo.title} 
+                  alt={photo.title || "Photo de la galerie"} 
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                
-                {/* Overlay au survol */}
-                <div className="absolute inset-0 bg-navy-deep/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-4 text-center">
-                  <span className="text-white font-semibold mb-2 drop-shadow-md">
-                    {photo.title}
-                  </span>
-                  <span className="text-xs text-white bg-navy-deep/80 px-3 py-1.5 rounded-full font-medium">
-                    Agrandir
-                  </span>
-                </div>
               </div>
             ))}
           </div>
