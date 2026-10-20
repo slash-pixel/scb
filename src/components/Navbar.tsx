@@ -2,12 +2,11 @@ import GoogleTranslate from "./LanguageSwitcher";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, Menu, X } from "lucide-react";
+import { UserCircle, LogIn, Menu, X } from "lucide-react";
 
 const LIENS = [
   { label: "Accueil", href: "/#accueil" },
   { label: "À propos", href: "/#a-propos" },
-  { label: "Filières", href: "/#filieres" },
   { label: "Galerie", href: "/#galerie" },
   { label: "FAQ", href: "/#faq" },
   { label: "Contact", href: "/#contact" },
@@ -20,11 +19,10 @@ export default function Navbar() {
   const [isOverBrightBlue, setIsOverBrightBlue] = useState(false);
   const [open, setOpen] = useState(false);
   
-  // État de l'animation au clic (0.8s)
   const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
 
-  // Animation retardée de 0.8s au clic avant la redirection
+  // Redirection Espace Parent
   const handleEspaceParentClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isAnimating) return;
@@ -38,7 +36,14 @@ export default function Navbar() {
     }, 800);
   };
 
-  // 1. SCROLL PROGRESSIF DU TRANSPARENT (0) À L'OPAQUE COMPLET (1)
+  // Redirection vers la page de connexion (/login-page)
+  const handleLoginClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpen(false);
+    navigate("/login-page");
+  };
+
+  // 1. Scroll progressif
   useEffect(() => {
     const handleScroll = () => {
       const currentScroll = window.scrollY || document.documentElement.scrollTop;
@@ -55,7 +60,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 2. DÉTECTION DES SECTIONS SPÉCIFIQUES
+  // 2. Détection de sections spécifiques
   useEffect(() => {
     const observerOptions = {
       rootMargin: "0px 0px -90% 0px",
@@ -154,6 +159,18 @@ export default function Navbar() {
               </motion.a>
             ))}
 
+            {/* BOUTON SE CONNECTER (DESKTOP) */}
+            <motion.button
+              type="button"
+              onClick={handleLoginClick}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.95 }}
+              className="ml-3 group relative flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4.5 py-2 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/20 hover:border-white/40 cursor-pointer"
+            >
+              <LogIn className="h-4 w-4 text-gold transition-transform duration-300 group-hover:scale-110" />
+              <span className="tracking-wide">Se connecter</span>
+            </motion.button>
+
             {/* BOUTON ESPACE PARENT (DESKTOP) */}
             <motion.button
               type="button"
@@ -173,7 +190,7 @@ export default function Navbar() {
                   : {}
               }
               transition={{ duration: 0.8, ease: "easeInOut" }}
-              className={`ml-3 group relative flex items-center gap-2 rounded-full border border-gold/80 px-4.5 py-2 text-sm font-semibold transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+              className={`ml-2 group relative flex items-center gap-2 rounded-full border border-gold/80 px-4.5 py-2 text-sm font-semibold transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold cursor-pointer ${
                 isAnimating
                   ? "bg-gold text-navy-deep border-gold"
                   : "bg-transparent text-gold hover:bg-gold hover:text-navy-deep hover:shadow-[0_0_18px_rgba(212,175,55,0.35)]"
@@ -227,6 +244,17 @@ export default function Navbar() {
                 </motion.a>
               ))}
 
+              {/* BOUTON SE CONNECTER (MOBILE) */}
+              <motion.button
+                type="button"
+                onClick={handleLoginClick}
+                whileTap={{ scale: 0.95 }}
+                className="mt-4 flex items-center justify-center gap-2 rounded-full bg-white/10 border border-white/20 px-5 py-3 text-center text-sm font-semibold text-white transition-all duration-300 hover:bg-white/20 cursor-pointer"
+              >
+                <LogIn className="h-5 w-5 text-gold" />
+                <span>Se connecter</span>
+              </motion.button>
+
               {/* BOUTON ESPACE PARENT (MOBILE) */}
               <motion.button
                 type="button"
@@ -246,7 +274,7 @@ export default function Navbar() {
                     : {}
                 }
                 transition={{ duration: 0.8, ease: "easeInOut" }}
-                className={`mt-6 flex items-center justify-center gap-2 rounded-full border border-gold px-5 py-3 text-center text-sm font-semibold transition-all duration-300 ${
+                className={`mt-3 flex items-center justify-center gap-2 rounded-full border border-gold px-5 py-3 text-center text-sm font-semibold transition-all duration-300 cursor-pointer ${
                   isAnimating
                     ? "bg-gold text-navy-deep"
                     : "bg-transparent text-gold hover:bg-gold hover:text-navy-deep"
