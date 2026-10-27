@@ -4,7 +4,7 @@ export default function Hero() {
   return (
     <section
       id="accueil"
-      className="relative h-dvh min-h-[680px] w-full overflow-hidden flex items-end"
+      className="relative h-[calc(100vh-7rem)] min-h-[600px] w-full overflow-hidden flex items-end m-0 p-0"
     >
       {/* Image de fond */}
       <div
@@ -12,26 +12,27 @@ export default function Hero() {
         style={{ backgroundImage: "url('/sbc.jpg')" }}
       />
       
-      {/* 
-        Dégradés de lisibilité :
-        - Dégradé du haut : Assure la lisibilité de la Navbar fixe.
-        - Dégradé du bas : Détache le texte et fait la transition vers la section suivante.
-      */}
-      <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/70 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/85 to-navy-deep/30" />
+      {/* Dégradés d'ambiance et de lisibilité */}
+      <div className="absolute inset-0 bg-gradient-to-r from-navy-deep/90 via-navy-deep/30 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-transparent to-transparent pointer-events-none" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 lg:px-10 pb-20 md:pb-24 pt-28">
+      {/* Contenu du Hero */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 lg:px-10 pb-16 sm:pb-20 pt-12">
         
         {/* Titre principal */}
         <motion.h1
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white leading-tight max-w-4xl drop-shadow-md"
+          className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-[1.18] max-w-2xl sm:max-w-3xl drop-shadow-md"
         >
           Pour une éducation intégrale et humaine,{" "}
-          <br className="hidden sm:block" />
-          centrée sur la personne face au défi du monde moderne et du numérique.
+          <span className="block mt-1 sm:mt-2 text-white/95">
+            centrée sur la personne face au défi
+          </span>
+          <span className="block mt-1 sm:mt-2 text-white/95">
+            du monde moderne et du numérique.
+          </span>
         </motion.h1>
 
         {/* Description */}
@@ -39,7 +40,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 max-w-xl text-base md:text-lg text-white/95 leading-relaxed drop-shadow"
+          className="mt-6 max-w-lg md:max-w-xl text-base md:text-lg text-white/90 leading-relaxed drop-shadow-sm font-normal"
         >
           Le Collège Catholique Saint Charles Borromée accompagne ses
           élèves vers l'excellence académique, dans un cadre
@@ -57,7 +58,7 @@ export default function Hero() {
             href="#a-propos"
             className="rounded-full bg-gold px-7 py-3.5 text-sm font-semibold text-navy-deep
                        transition-all duration-300 hover:bg-gold-soft hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gold/30
-                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-navy-deep"
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
           >
             Découvrir l'établissement
           </a>
@@ -65,23 +66,12 @@ export default function Hero() {
             href="#contact"
             className="rounded-full border-2 border-white/60 bg-white/5 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-sm
                        transition-all duration-300 hover:bg-gold/15 hover:border-gold hover:text-gold-soft hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gold/20
-                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-navy-deep"
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
           >
             Nous contacter
           </a>
         </motion.div>
       </div>
-
-      {/* Repère de défilement (Scroll indicator) */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1.1 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden sm:block"
-      >
-        <a href="#a-propos" aria-label="Défiler vers la section à propos">
-        </a>
-      </motion.div>
     </section>
   );
 }

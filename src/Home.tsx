@@ -1,5 +1,6 @@
 
 import AppLayout from "./components/navket";
+import Hero from "./components/Hero";
 import About from "./components/About";
 import Motpr from "./components/Motpr";
 import InteractiveHub from"./components/sectio";
@@ -18,6 +19,7 @@ export default function App() {
   return (
     <div className="font-body text-ink antialiased">
       <AppLayout />
+      <Hero />
       <About />
       <Motpr />
       <InteractiveHub />

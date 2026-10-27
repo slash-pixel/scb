@@ -1,8 +1,8 @@
 import GoogleTranslate from "./LanguageSwitcher";
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { useState, useRef, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, LogIn, Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown, ExternalLink } from "lucide-react";
 
 const LIENS = [
   { label: "Accueil", href: "/#accueil" },
@@ -12,15 +12,25 @@ const LIENS = [
   { label: "Contact", href: "/#contact" },
 ];
 
-const NAVY_RGB = "15, 23, 42";
-
 export default function Navbar() {
-  const [navOpacity, setNavOpacity] = useState(0);
-  const [isOverBrightBlue, setIsOverBrightBlue] = useState(false);
   const [open, setOpen] = useState(false);
-  
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownTimeoutRef = useRef<number | null>(null);
+
   const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
+
+  // Survol du sous-menu "Nos espaces"
+  const handleMouseEnter = () => {
+    if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
+    setDropdownOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    dropdownTimeoutRef.current = window.setTimeout(() => {
+      setDropdownOpen(false);
+    }, 150);
+  };
 
   // Redirection Espace Parent
   const handleEspaceParentClick = (e: React.MouseEvent) => {
@@ -28,6 +38,7 @@ export default function Navbar() {
     if (isAnimating) return;
 
     setIsAnimating(true);
+    setDropdownOpen(false);
 
     setTimeout(() => {
       setIsAnimating(false);
@@ -36,53 +47,12 @@ export default function Navbar() {
     }, 800);
   };
 
-  // Redirection vers la page de connexion (/login-page)
+  // Redirection connexion admin
   const handleLoginClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setOpen(false);
     navigate("/login-page");
   };
-
-  // 1. Scroll progressif
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScroll = window.scrollY || document.documentElement.scrollTop;
-      const transitionZone = 280;
-
-      const rawRatio = Math.min(Math.max(currentScroll / transitionZone, 0), 1);
-      const smoothRatio = rawRatio * rawRatio * (3 - 2 * rawRatio);
-
-      setNavOpacity(smoothRatio);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // 2. Détection de sections spécifiques
-  useEffect(() => {
-    const observerOptions = {
-      rootMargin: "0px 0px -90% 0px",
-      threshold: 0,
-    };
-
-    const handleIntersect: IntersectionObserverCallback = (entries) => {
-      entries.forEach((entry) => {
-        setIsOverBrightBlue(entry.isIntersecting);
-      });
-    };
-
-    const observer = new IntersectionObserver(handleIntersect, observerOptions);
-
-    const targetSections = document.querySelectorAll(
-      '[data-navbar="transparent"], .bg-bleu-vif, #section-bleu'
-    );
-
-    targetSections.forEach((sec) => observer.observe(sec));
-
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -91,30 +61,10 @@ export default function Navbar() {
     };
   }, [open]);
 
-  const isTransparentSection = isOverBrightBlue;
-
   return (
-    <nav
-      className={`w-full transition-all duration-300 ${
-        navOpacity > 0.05 ? "backdrop-blur-md" : "backdrop-blur-none"
-      }`}
-      style={{
-        backgroundColor: isTransparentSection
-          ? "rgba(0, 0, 0, 0.2)"
-          : `rgba(${NAVY_RGB}, ${navOpacity})`,
-
-        boxShadow:
-          !isTransparentSection && navOpacity > 0
-            ? `0 10px 25px -5px rgba(0, 0, 0, ${navOpacity * 0.4})`
-            : "none",
-
-        borderBottom:
-          !isTransparentSection && navOpacity > 0
-            ? `1px solid rgba(212, 175, 55, ${navOpacity * 0.3})`
-            : "1px solid transparent",
-      }}
-    >
+    <nav className="w-full bg-navy-deep text-white border-b border-gold/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 flex items-center justify-between h-16 sm:h-20">
+        
         {/* LOGO */}
         <a
           href="/#accueil"
@@ -123,11 +73,11 @@ export default function Navbar() {
           <img
             src="/galerie/logo-removebg-preview.png"
             alt="Logo Collège Catholique Saint Charles Borromée"
-            className="h-8 w-auto sm:h-11 shrink-0 object-contain rounded-full drop-shadow"
+            className="h-8 w-auto sm:h-11 shrink-0 object-contain rounded-full"
           />
 
-          <span className="font-display text-white leading-tight min-w-0 drop-shadow">
-            <span className="block text-[0.5rem] sm:text-[0.65rem] tracking-[0.1em] sm:tracking-[0.2em] uppercase font-mono truncate opacity-90">
+          <span className="font-display text-white leading-tight min-w-0">
+            <span className="block text-[0.5rem] sm:text-[0.65rem] tracking-[0.1em] sm:tracking-[0.2em] uppercase font-mono truncate opacity-80">
               Collège Catholique
             </span>
             <span className="block text-xs sm:text-lg font-semibold truncate">
@@ -145,59 +95,76 @@ export default function Navbar() {
                 key={lien.href}
                 href={lien.href}
                 whileTap={{ scale: 0.92 }}
-                className="group relative px-4 py-2.5 text-sm font-medium text-white/90 transition-colors duration-300 hover:text-white drop-shadow"
+                className="group relative px-4 py-2.5 text-sm font-medium text-white/90 transition-colors duration-300 hover:text-white"
               >
                 <span
                   aria-hidden="true"
                   className="absolute inset-0 rounded-lg bg-white/10 opacity-0 scale-95 transition-all duration-300 ease-out group-hover:scale-100 group-hover:opacity-100"
                 />
-                <span
-                  aria-hidden="true"
-                  className="absolute left-1/2 right-1/2 bottom-1 h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent opacity-0 transition-all duration-300 ease-out group-hover:left-3 group-hover:right-3 group-hover:opacity-100"
-                />
                 <span className="relative">{lien.label}</span>
               </motion.a>
             ))}
 
-            {/* BOUTON SE CONNECTER (DESKTOP) */}
+            {/* SOUS-MENU "NOS ESPACES" (DESKTOP) */}
+            <div 
+              className="relative ml-1"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <div
+                className={`group relative px-4 py-2.5 text-sm font-medium transition-colors duration-300 cursor-pointer flex items-center gap-1.5 ${
+                  dropdownOpen ? "text-gold" : "text-white/90 hover:text-white"
+                }`}
+              >
+                <span className="relative">Nos espaces</span>
+                <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${dropdownOpen ? "rotate-180 text-gold" : "text-white/70"}`} />
+              </div>
+
+              {/* Dropdown Menu */}
+              <AnimatePresence>
+                {dropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 12, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="absolute left-0 mt-2 w-56 rounded-2xl bg-navy-deep shadow-2xl border border-gold/30 p-2 text-white z-50 overflow-hidden"
+                  >
+                    <button
+                      type="button"
+                      onClick={handleEspaceParentClick}
+                      className="w-full text-left px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition-all duration-300 hover:bg-gold hover:text-navy-deep flex items-center justify-between cursor-pointer group/item"
+                    >
+                      <span>Espace Parent</span>
+                      <span className="opacity-0 group-hover/item:opacity-100 transition-opacity text-navy-deep font-bold">→</span>
+                    </button>
+                    
+                    <div className="h-[1px] bg-white/10 my-1.5 mx-2" />
+
+                    <a
+                      href="https://gesnotes.netlify.app/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setDropdownOpen(false)}
+                      className="w-full text-left px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition-all duration-300 hover:bg-gold hover:text-navy-deep flex items-center justify-between cursor-pointer group/item text-white/90"
+                    >
+                      <span>Espace Enseignant</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-gold group-hover/item:text-navy-deep transition-colors" />
+                    </a>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* BOUTON SE CONNECTER */}
             <motion.button
               type="button"
               onClick={handleLoginClick}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.95 }}
-              className="ml-3 group relative flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4.5 py-2 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/20 hover:border-white/40 cursor-pointer"
+              className="ml-3 group relative flex items-center justify-center rounded-full bg-white/10 border border-white/20 px-5 py-2 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/20 hover:border-white/40 cursor-pointer"
             >
-              <LogIn className="h-4 w-4 text-gold transition-transform duration-300 group-hover:scale-110" />
               <span className="tracking-wide">Se connecter</span>
-            </motion.button>
-
-            {/* BOUTON ESPACE PARENT (DESKTOP) */}
-            <motion.button
-              type="button"
-              onClick={handleEspaceParentClick}
-              whileHover={{ scale: isAnimating ? 1 : 1.04 }}
-              whileTap={{ scale: 0.95 }}
-              animate={
-                isAnimating
-                  ? {
-                      scale: [1, 0.93, 1.06, 0.98, 1],
-                      boxShadow: [
-                        "0 0 0px rgba(212, 175, 55, 0)",
-                        "0 0 28px rgba(212, 175, 55, 0.85)",
-                        "0 0 12px rgba(212, 175, 55, 0.4)",
-                      ],
-                    }
-                  : {}
-              }
-              transition={{ duration: 0.8, ease: "easeInOut" }}
-              className={`ml-2 group relative flex items-center gap-2 rounded-full border border-gold/80 px-4.5 py-2 text-sm font-semibold transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold cursor-pointer ${
-                isAnimating
-                  ? "bg-gold text-navy-deep border-gold"
-                  : "bg-transparent text-gold hover:bg-gold hover:text-navy-deep hover:shadow-[0_0_18px_rgba(212,175,55,0.35)]"
-              }`}
-            >
-              <UserCircle className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-              <span className="tracking-wide">Espace Parent</span>
             </motion.button>
           </nav>
 
@@ -210,16 +177,15 @@ export default function Navbar() {
           <motion.button
             whileTap={{ scale: 0.85 }}
             onClick={() => setOpen((v) => !v)}
-            className="lg:hidden text-white hover:text-gold-soft transition-colors duration-300 p-1.5 -mr-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded-md"
+            className="lg:hidden text-white hover:text-gold transition-colors duration-300 p-1.5 -mr-1 rounded-md"
             aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
-            aria-expanded={open}
           >
             {open ? <X size={24} /> : <Menu size={24} />}
           </motion.button>
         </div>
       </div>
 
-      {/* Menu Mobile Dropdown */}
+      {/* Menu Mobile */}
       <AnimatePresence>
         {open && (
           <motion.nav
@@ -230,61 +196,46 @@ export default function Navbar() {
             className="lg:hidden overflow-hidden bg-navy-deep border-t border-white/10 shadow-xl"
           >
             <div className="flex flex-col px-5 py-5 gap-1 max-h-[calc(100vh-5rem)] overflow-y-auto">
-              {LIENS.map((lien, i) => (
-                <motion.a
+              {LIENS.map((lien) => (
+                <a
                   key={lien.href}
                   href={lien.href}
                   onClick={() => setOpen(false)}
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  whileHover={{ x: 6, color: "#fcd34d" }}
-                  transition={{ duration: 0.3, delay: 0.04 * i }}
-                  className="py-3 text-sm sm:text-base font-medium text-white/90 border-b border-white/5 last:border-none"
+                  className="py-3 text-sm font-medium text-white/90 border-b border-white/5 last:border-none"
                 >
                   {lien.label}
-                </motion.a>
+                </a>
               ))}
 
-              {/* BOUTON SE CONNECTER (MOBILE) */}
-              <motion.button
+              <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
+                <p className="text-[11px] font-mono uppercase tracking-widest text-gold px-1">Nos espaces</p>
+                <button
+                  type="button"
+                  onClick={handleEspaceParentClick}
+                  className="w-full flex items-center justify-between rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-left text-sm font-semibold text-gold cursor-pointer"
+                >
+                  <span>Espace Parent</span>
+                </button>
+
+                <a
+                  href="https://gesnotes.netlify.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setOpen(false)}
+                  className="w-full flex items-center justify-between rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white cursor-pointer"
+                >
+                  <span>Espace Enseignant</span>
+                  <ExternalLink className="h-4 w-4 text-gold" />
+                </a>
+              </div>
+
+              <button
                 type="button"
                 onClick={handleLoginClick}
-                whileTap={{ scale: 0.95 }}
-                className="mt-4 flex items-center justify-center gap-2 rounded-full bg-white/10 border border-white/20 px-5 py-3 text-center text-sm font-semibold text-white transition-all duration-300 hover:bg-white/20 cursor-pointer"
+                className="mt-4 flex items-center justify-center rounded-full bg-white/10 border border-white/20 px-5 py-3 text-center text-sm font-semibold text-white cursor-pointer"
               >
-                <LogIn className="h-5 w-5 text-gold" />
                 <span>Se connecter</span>
-              </motion.button>
-
-              {/* BOUTON ESPACE PARENT (MOBILE) */}
-              <motion.button
-                type="button"
-                onClick={handleEspaceParentClick}
-                whileHover={{ scale: isAnimating ? 1 : 1.02 }}
-                whileTap={{ scale: 0.95 }}
-                animate={
-                  isAnimating
-                    ? {
-                        scale: [1, 0.94, 1.04, 0.98, 1],
-                        boxShadow: [
-                          "0 0 0px rgba(212, 175, 55, 0)",
-                          "0 0 25px rgba(212, 175, 55, 0.8)",
-                          "0 0 10px rgba(212, 175, 55, 0.4)",
-                        ],
-                      }
-                    : {}
-                }
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-                className={`mt-3 mb-2 flex items-center justify-center gap-2 rounded-full border border-gold px-5 py-3 text-center text-sm font-semibold transition-all duration-300 cursor-pointer ${
-                  isAnimating
-                    ? "bg-gold text-navy-deep"
-                    : "bg-transparent text-gold hover:bg-gold hover:text-navy-deep"
-                }`}
-              >
-                <UserCircle className="h-5 w-5" />
-                <span>Espace Parent</span>
-              </motion.button>
+              </button>
             </div>
           </motion.nav>
         )}

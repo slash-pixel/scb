@@ -24,7 +24,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     photo: "/galerie/pr1.jpg",
   },
   {
-    nom: "Ab. Roger Joseph LIMA",
+    nom: "Ab. Joseph Roger LIMA",
     priseDeFonction: "Juillet 2018",
     finDeMandat: "Juillet 2019",
     initiales: "RL",
@@ -78,7 +78,7 @@ const anciensPrincipaux: AncienPrincipal[] = [
     initiales: "SE",
   },
   {
-    nom: "Ab. BAYEMEG",
+    nom: "Ab. Dieudonné BAYEMEG",
     priseDeFonction: "Juillet 2003",
     finDeMandat: "Juillet 2005",
     initiales: "AB",
