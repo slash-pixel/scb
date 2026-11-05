@@ -2,15 +2,20 @@ import GoogleTranslate from "./LanguageSwitcher";
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Menu, X, ChevronDown, ExternalLink } from "lucide-react";
+import { Menu, X, ChevronDown, ExternalLink, FileText } from "lucide-react";
 
 const LIENS = [
   { label: "Accueil", href: "/#accueil" },
   { label: "À propos", href: "/#a-propos" },
+  { label: "Agenda", href: "/#agenda" },
   { label: "Galerie", href: "/#galerie" },
   { label: "FAQ", href: "/#faq" },
   { label: "Contact", href: "/#contact" },
 ];
+
+const URL_FICHE_ELEVE = "https://scb-form.vercel.app/";
+const API_BASE_URL = "https://scbapi.onrender.com";
+const URL_ESPACE_ENSEIGNANT = "https://gesnotes.netlify.app/";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -19,6 +24,21 @@ export default function Navbar() {
 
   const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
+
+  const [hasAgenda, setHasAgenda] = useState(false);
+
+useEffect(() => {
+  fetch(`${API_BASE_URL}/api/events?mode=agenda`)
+    .then((r) => (r.ok ? r.json() : []))
+    .then((data: { eventDate: string }[]) => {
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      setHasAgenda(data.some((ev) => new Date(ev.eventDate) >= startOfToday));
+    })
+    .catch(() => {});
+}, []);
+
+const liens = hasAgenda ? LIENS : LIENS.filter((l) => l.href !== "/#agenda");
 
   // Survol du sous-menu "Nos espaces"
   const handleMouseEnter = () => {
@@ -62,9 +82,8 @@ export default function Navbar() {
   }, [open]);
 
   return (
-    <nav className="w-full bg-navy-deep text-white border-b border-gold/10">
+    <header className="w-full bg-navy-deep text-white border-b border-gold/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 flex items-center justify-between h-16 sm:h-20">
-        
         {/* LOGO */}
         <a
           href="/#accueil"
@@ -87,15 +106,15 @@ export default function Navbar() {
         </a>
 
         {/* CONTENEUR NAVIGATION */}
-        <div className="flex items-center gap-2 sm:gap-4 lg:gap-5">
+        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
           {/* Navigation Desktop */}
           <nav className="hidden lg:flex items-center gap-1">
-            {LIENS.map((lien) => (
+            {liens.map((lien) => (
               <motion.a
                 key={lien.href}
                 href={lien.href}
                 whileTap={{ scale: 0.92 }}
-                className="group relative px-4 py-2.5 text-sm font-medium text-white/90 transition-colors duration-300 hover:text-white"
+                className="group relative px-3 py-2 text-sm font-medium text-white/90 transition-colors duration-300 hover:text-white"
               >
                 <span
                   aria-hidden="true"
@@ -106,21 +125,24 @@ export default function Navbar() {
             ))}
 
             {/* SOUS-MENU "NOS ESPACES" (DESKTOP) */}
-            <div 
+            <div
               className="relative ml-1"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
               <div
-                className={`group relative px-4 py-2.5 text-sm font-medium transition-colors duration-300 cursor-pointer flex items-center gap-1.5 ${
+                className={`group relative px-3 py-2 text-sm font-medium transition-colors duration-300 cursor-pointer flex items-center gap-1.5 ${
                   dropdownOpen ? "text-gold" : "text-white/90 hover:text-white"
                 }`}
               >
                 <span className="relative">Nos espaces</span>
-                <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${dropdownOpen ? "rotate-180 text-gold" : "text-white/70"}`} />
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform duration-300 ${
+                    dropdownOpen ? "rotate-180 text-gold" : "text-white/70"
+                  }`}
+                />
               </div>
 
-              {/* Dropdown Menu */}
               <AnimatePresence>
                 {dropdownOpen && (
                   <motion.div
@@ -136,13 +158,15 @@ export default function Navbar() {
                       className="w-full text-left px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition-all duration-300 hover:bg-gold hover:text-navy-deep flex items-center justify-between cursor-pointer group/item"
                     >
                       <span>Espace Parent</span>
-                      <span className="opacity-0 group-hover/item:opacity-100 transition-opacity text-navy-deep font-bold">→</span>
+                      <span className="opacity-0 group-hover/item:opacity-100 transition-opacity text-navy-deep font-bold">
+                        →
+                      </span>
                     </button>
-                    
+
                     <div className="h-[1px] bg-white/10 my-1.5 mx-2" />
 
                     <a
-                      href="https://gesnotes.netlify.app/"
+                      href={URL_ESPACE_ENSEIGNANT}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => setDropdownOpen(false)}
@@ -156,13 +180,26 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
+            {/* BOUTON FICHE ÉLÈVE (DESKTOP) */}
+            <motion.a
+              href={URL_FICHE_ELEVE}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95 }}
+              className="ml-2 group relative flex items-center gap-2 rounded-full bg-gradient-to-r from-gold via-amber-400 to-gold px-4 py-2 text-xs font-bold text-navy-deep shadow-lg shadow-gold/20 transition-all duration-300 hover:shadow-gold/40 hover:brightness-110"
+            >
+              <FileText className="h-3.5 w-3.5 text-navy-deep shrink-0 transition-transform duration-300 group-hover:rotate-6" />
+              <span className="tracking-wide uppercase">Fiche Élève</span>
+            </motion.a>
+
             {/* BOUTON SE CONNECTER */}
             <motion.button
               type="button"
               onClick={handleLoginClick}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.95 }}
-              className="ml-3 group relative flex items-center justify-center rounded-full bg-white/10 border border-white/20 px-5 py-2 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/20 hover:border-white/40 cursor-pointer"
+              className="ml-2 group relative flex items-center justify-center rounded-full bg-white/10 border border-white/20 px-4 py-2 text-xs font-semibold text-white transition-all duration-300 hover:bg-white/20 hover:border-white/40 cursor-pointer"
             >
               <span className="tracking-wide">Se connecter</span>
             </motion.button>
@@ -175,6 +212,7 @@ export default function Navbar() {
 
           {/* Bouton Menu Mobile */}
           <motion.button
+            type="button"
             whileTap={{ scale: 0.85 }}
             onClick={() => setOpen((v) => !v)}
             className="lg:hidden text-white hover:text-gold transition-colors duration-300 p-1.5 -mr-1 rounded-md"
@@ -196,7 +234,7 @@ export default function Navbar() {
             className="lg:hidden overflow-hidden bg-navy-deep border-t border-white/10 shadow-xl"
           >
             <div className="flex flex-col px-5 py-5 gap-1 max-h-[calc(100vh-5rem)] overflow-y-auto">
-              {LIENS.map((lien) => (
+              {liens.map((lien) => (
                 <a
                   key={lien.href}
                   href={lien.href}
@@ -207,8 +245,31 @@ export default function Navbar() {
                 </a>
               ))}
 
+              {/* SECTION FICHE ÉLÈVE MOBILE */}
+              <div className="mt-4 pt-3 border-t border-white/10 space-y-2">
+                <p className="text-[11px] font-mono uppercase tracking-widest text-gold px-1">
+                  Services Élèves
+                </p>
+                <a
+                  href={URL_FICHE_ELEVE}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setOpen(false)}
+                  className="w-full flex items-center justify-between rounded-xl bg-gradient-to-r from-gold to-amber-400 px-4 py-3 text-left text-sm font-bold text-navy-deep shadow-md cursor-pointer active:scale-95 transition-transform"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <FileText className="h-4 w-4 text-navy-deep shrink-0" />
+                    <span>Remplir la Fiche Élève</span>
+                  </div>
+                  <ExternalLink className="h-4 w-4 text-navy-deep" />
+                </a>
+              </div>
+
+              {/* SECTION NOS ESPACES MOBILE */}
               <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
-                <p className="text-[11px] font-mono uppercase tracking-widest text-gold px-1">Nos espaces</p>
+                <p className="text-[11px] font-mono uppercase tracking-widest text-gold px-1">
+                  Nos espaces
+                </p>
                 <button
                   type="button"
                   onClick={handleEspaceParentClick}
@@ -218,7 +279,7 @@ export default function Navbar() {
                 </button>
 
                 <a
-                  href="https://gesnotes.netlify.app/"
+                  href={URL_ESPACE_ENSEIGNANT}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setOpen(false)}
@@ -240,6 +301,6 @@ export default function Navbar() {
           </motion.nav>
         )}
       </AnimatePresence>
-    </nav>
+    </header>
   );
 }

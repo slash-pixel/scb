@@ -20,8 +20,39 @@ interface CommentItem {
 
 const API_BASE_URL = "https://scbapi.onrender.com";
 
+type DisplayMode = "AGENDA" | "TICKER" | "BOTH";
+
+interface EventItem {
+  id: string;
+  title: string;
+  description: string | null;
+  eventDate: string;
+  displayMode: DisplayMode;
+}
+
+const DISPLAY_LABELS: Record<DisplayMode, string> = {
+  AGENDA: "Agenda",
+  TICKER: "Bandeau",
+  BOTH: "Agenda + bandeau",
+};
+
+const EMPTY_EVENT_FORM = {
+  title: "",
+  description: "",
+  eventDate: "",
+  displayMode: "AGENDA" as DisplayMode,
+};
+
+// Convertit une date ISO en valeur pour <input type="datetime-local" />
+const toLocalInput = (iso: string) => {
+  const d = new Date(iso);
+  d.setMinutes(d.
+    tMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 16);
+};
+
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<"images" | "comments">("images");
+  const [activeTab, setActiveTab] = useState<"images" | "comments" | "events">("images");
   const navigate = useNavigate();
 
   // --- ÉTATS IMAGES ---
@@ -37,10 +68,21 @@ export default function AdminDashboard() {
   const [isFetchingComments, setIsFetchingComments] = useState(true);
   const [processingCommentId, setProcessingCommentId] = useState<number | null>(null);
 
+  
   // Édition de commentaire
   const [editingComment, setEditingComment] = useState<CommentItem | null>(null);
   const [editAuthor, setEditAuthor] = useState("");
   const [editContent, setEditContent] = useState("");
+
+
+  // --- ÉTATS ÉVÉNEMENTS ---
+const [events, setEvents] = useState<EventItem[]>([]);
+const [isFetchingEvents, setIsFetchingEvents] = useState(true);
+const [isSavingEvent, setIsSavingEvent] = useState(false);
+const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
+const [editingEventId, setEditingEventId] = useState<string | null>(null);
+const [eventForm, setEventForm] = useState(EMPTY_EVENT_FORM);
+
 
   // --- NOTIFICATIONS ---
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -79,12 +121,13 @@ export default function AdminDashboard() {
       }
 
       try {
-        const [imagesRes, commentsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/images`),
-          fetch(`${API_BASE_URL}/api/admin/comments`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+       const [imagesRes, commentsRes, eventsRes] = await Promise.all([
+  fetch(`${API_BASE_URL}/api/images`),
+  fetch(`${API_BASE_URL}/api/admin/comments`, {
+    headers: { Authorization: `Bearer ${token}` },
+  }),
+  fetch(`${API_BASE_URL}/api/events`),
+]);
 
         if (isMounted && imagesRes.ok) {
           const imgData = await imagesRes.json();
@@ -95,12 +138,19 @@ export default function AdminDashboard() {
           const commentData = await commentsRes.json();
           setComments(commentData);
         }
+
+        if (isMounted && eventsRes.ok) {
+  const eventData = await eventsRes.json();
+  setEvents(eventData);
+}
+
       } catch {
         console.error("Erreur d'initialisation des données");
       } finally {
         if (isMounted) {
           setIsFetchingImages(false);
           setIsFetchingComments(false);
+          setIsFetchingEvents(false);
         }
       }
     };
@@ -239,6 +289,90 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchEvents = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/events`);
+    if (response.ok) setEvents(await response.json());
+  } catch {
+    console.error("Erreur lors de la récupération des événements");
+  } finally {
+    setIsFetchingEvents(false);
+  }
+};
+
+const resetEventForm = () => {
+  setEditingEventId(null);
+  setEventForm(EMPTY_EVENT_FORM);
+};
+
+const handleSubmitEvent = async (e: FormEvent) => {
+  e.preventDefault();
+  const token = localStorage.getItem("token");
+  if (!token) return navigate("/login");
+
+  setIsSavingEvent(true);
+  setStatus(null);
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/events${editingEventId ? `/${editingEventId}` : ""}`,
+      {
+        method: editingEventId ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          ...eventForm,
+          eventDate: new Date(eventForm.eventDate).toISOString(),
+        }),
+      }
+    );
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Échec de l'enregistrement.");
+
+    setStatus({
+      type: "success",
+      message: editingEventId ? "Événement mis à jour !" : "Événement ajouté !",
+    });
+    resetEventForm();
+    await fetchEvents();
+  } catch (err) {
+    setStatus({ type: "error", message: err instanceof Error ? err.message : "Erreur inattendue." });
+  } finally {
+    setIsSavingEvent(false);
+  }
+};
+
+const handleEditEvent = (ev: EventItem) => {
+  setEditingEventId(ev.id);
+  setEventForm({
+    title: ev.title,
+    description: ev.description ?? "",
+    eventDate: toLocalInput(ev.eventDate),
+    displayMode: ev.displayMode,
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+const handleDeleteEvent = async (id: string) => {
+  if (!window.confirm("Supprimer cet événement ?")) return;
+  const token = localStorage.getItem("token");
+  if (!token) return navigate("/login");
+
+  setDeletingEventId(id);
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/events/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error("Erreur suppression.");
+    setEvents((prev) => prev.filter((ev) => ev.id !== id));
+    if (editingEventId === id) resetEventForm();
+    setStatus({ type: "success", message: "Événement supprimé !" });
+  } catch {
+    setStatus({ type: "error", message: "Erreur lors de la suppression." });
+  } finally {
+    setDeletingEventId(null);
+  }
+};
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
@@ -246,6 +380,16 @@ export default function AdminDashboard() {
 
   const pendingComments = comments.filter((c) => c.status === "pending");
   const approvedComments = comments.filter((c) => c.status === "approved");
+  const nowMs = Date.now();
+const sortedEvents = [...events].sort((a, b) => {
+  const ta = new Date(a.eventDate).getTime();
+  const tb = new Date(b.eventDate).getTime();
+  const aPast = ta < nowMs;
+  const bPast = tb < nowMs;
+  if (aPast !== bPast) return aPast ? 1 : -1;
+  return aPast ? tb - ta : ta - tb;
+});
+const upcomingCount = events.filter((ev) => new Date(ev.eventDate).getTime() >= nowMs).length;
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-paper font-sans text-navy-deep">
@@ -304,6 +448,20 @@ export default function AdminDashboard() {
                 </span>
               )}
             </button>
+
+            <button
+  onClick={() => setActiveTab("events")}
+  className={`flex-1 lg:flex-none flex items-center justify-between px-3 lg:px-4 py-2.5 lg:py-3 rounded-xl font-semibold text-xs lg:text-sm transition-all duration-200 whitespace-nowrap ${
+    activeTab === "events"
+      ? "bg-gold text-navy-deep font-bold shadow-md"
+      : "hover:bg-white/10 text-white/80 hover:text-white"
+  }`}
+>
+  <span>Événements</span>
+  <span className={`text-[10px] lg:text-xs font-bold px-2 py-0.5 rounded-md ml-2 ${activeTab === "events" ? "bg-navy-deep text-white" : "bg-white/10 text-white"}`}>
+    {upcomingCount}
+  </span>
+</button>
           </nav>
         </div>
 
@@ -324,13 +482,19 @@ export default function AdminDashboard() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white p-5 lg:px-8 rounded-2xl shadow-sm border border-navy/10 gap-3">
           <div>
             <h1 className="text-xl lg:text-2xl font-extrabold text-navy-deep">
-              {activeTab === "images" ? "Gestion du Portfolio & Galerie" : "Modération des Commentaires"}
-            </h1>
-            <p className="text-xs text-navy/60 mt-1">
-              {activeTab === "images" 
-                ? "Téléversez et administrez les visuels publics" 
-                : "Consultez, modifiez, validez ou supprimez les commentaires"}
-            </p>
+  {activeTab === "images"
+    ? "Gestion du Portfolio & Galerie"
+    : activeTab === "comments"
+    ? "Modération des Commentaires"
+    : "Agenda & Bandeau d'événements"}
+</h1>
+<p className="text-xs text-navy/60 mt-1">
+  {activeTab === "images"
+    ? "Téléversez et administrez les visuels publics"
+    : activeTab === "comments"
+    ? "Consultez, modifiez, validez ou supprimez les commentaires"
+    : "Programmez les événements affichés sur l'agenda et le bandeau défilant"}
+</p>
           </div>
           {activeTab === "comments" && pendingComments.length > 0 && (
             <div className="bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold px-3 py-1.5 rounded-xl">
@@ -569,6 +733,159 @@ export default function AdminDashboard() {
 
           </div>
         )}
+
+        {/* ONGLET 3 : ÉVÉNEMENTS */}
+{activeTab === "events" && (
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    {/* Formulaire */}
+    <div className={`lg:col-span-1 bg-white rounded-2xl p-5 lg:p-6 shadow-sm h-fit space-y-5 ${editingEventId ? "border-2 border-gold" : "border border-navy/10"}`}>
+      <div className="flex justify-between items-center border-b border-navy/10 pb-3">
+        <h2 className="text-base font-bold text-navy-deep">
+          {editingEventId ? "Modifier l'événement" : "Ajouter un événement"}
+        </h2>
+        {editingEventId && (
+          <button type="button" onClick={resetEventForm} className="text-xs font-bold text-red-500 hover:underline">
+            Annuler
+          </button>
+        )}
+      </div>
+
+      <form onSubmit={handleSubmitEvent} className="space-y-4">
+        <div>
+          <label className="block text-xs font-semibold text-navy/70 uppercase tracking-wider mb-2">Titre</label>
+          <input
+            type="text"
+            value={eventForm.title}
+            maxLength={150}
+            onChange={(e) => setEventForm((f) => ({ ...f, title: e.target.value }))}
+            className="w-full text-xs p-2.5 rounded-xl border border-navy/20 bg-paper focus:outline-none focus:border-navy-deep"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-navy/70 uppercase tracking-wider mb-2">Description (optionnel)</label>
+          <textarea
+            value={eventForm.description}
+            onChange={(e) => setEventForm((f) => ({ ...f, description: e.target.value }))}
+            rows={3}
+            className="w-full text-xs p-2.5 rounded-xl border border-navy/20 bg-paper focus:outline-none focus:border-navy-deep"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-navy/70 uppercase tracking-wider mb-2">Date et heure</label>
+          <input
+            type="datetime-local"
+            value={eventForm.eventDate}
+            onChange={(e) => setEventForm((f) => ({ ...f, eventDate: e.target.value }))}
+            className="w-full text-xs p-2.5 rounded-xl border border-navy/20 bg-paper focus:outline-none focus:border-navy-deep"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-navy/70 uppercase tracking-wider mb-2">Affichage</label>
+          <select
+            value={eventForm.displayMode}
+            onChange={(e) => setEventForm((f) => ({ ...f, displayMode: e.target.value as DisplayMode }))}
+            className="w-full text-xs p-2.5 rounded-xl border border-navy/20 bg-paper focus:outline-none focus:border-navy-deep"
+          >
+            <option value="AGENDA">Agenda uniquement</option>
+            <option value="TICKER">Bandeau uniquement</option>
+            <option value="BOTH">Agenda + bandeau</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSavingEvent}
+          className="w-full bg-navy-deep hover:bg-gold text-white hover:text-navy-deep text-sm font-bold py-3 rounded-xl transition-all duration-300 shadow-lg disabled:opacity-50"
+        >
+          {isSavingEvent ? "Enregistrement..." : editingEventId ? "Enregistrer les modifications" : "Publier l'événement"}
+        </button>
+      </form>
+    </div>
+
+    {/* Liste */}
+    <div className="lg:col-span-2 bg-white rounded-2xl p-5 lg:p-6 shadow-sm border border-navy/10 space-y-4">
+      <h2 className="text-base font-bold text-navy-deep border-b border-navy/10 pb-3">
+        Événements programmés ({events.length})
+      </h2>
+
+      {isFetchingEvents ? (
+        <div className="text-center py-12 text-xs text-navy/50 font-medium">Chargement des événements...</div>
+      ) : events.length === 0 ? (
+        <div className="text-center py-12 text-xs text-navy/50 font-medium">Aucun événement programmé.</div>
+      ) : (
+        <div className="space-y-3">
+          {sortedEvents.map((ev) => {
+            const date = new Date(ev.eventDate);
+            const isPast = date.getTime() < nowMs;
+            const isToday = date.toDateString() === new Date().toDateString();
+            return (
+              <div
+                key={ev.id}
+                className={`p-4 rounded-xl border flex flex-col gap-3 ${
+                  isPast ? "bg-paper border-navy/10" : isToday ? "bg-amber-50/40 border-amber-200" : "bg-white border-navy/10"
+                }`}
+              >
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className={`font-extrabold text-xs ${isPast ? "text-navy/50" : "text-navy-deep"}`}>{ev.title}</span>
+                    <span
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                        isPast
+                          ? "bg-navy/10 text-navy/60"
+                          : isToday
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-emerald-100 text-emerald-800"
+                      }`}
+                    >
+                      {isPast ? "Passé" : isToday ? "Aujourd'hui" : "À venir"}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-navy-deep/5 text-navy-deep">
+                      {DISPLAY_LABELS[ev.displayMode]}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-navy/60">
+                    {date.toLocaleString("fr-FR", {
+                      weekday: "long",
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                  {ev.description && <p className="text-xs text-navy/80 leading-relaxed">{ev.description}</p>}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-navy/5">
+                  <button
+                    onClick={() => handleEditEvent(ev)}
+                    className="bg-white border border-navy/20 text-navy-deep hover:bg-navy-deep hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition"
+                  >
+                    Éditer
+                  </button>
+                  <button
+                    onClick={() => handleDeleteEvent(ev.id)}
+                    disabled={deletingEventId === ev.id}
+                    className="bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition disabled:opacity-50"
+                  >
+                    {deletingEventId === ev.id ? "Suppression..." : "Supprimer"}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+
+  </div>
+)}
 
       </main>
     </div>
