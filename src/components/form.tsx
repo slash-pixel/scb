@@ -46,8 +46,7 @@ const EMPTY_EVENT_FORM = {
 // Convertit une date ISO en valeur pour <input type="datetime-local" />
 const toLocalInput = (iso: string) => {
   const d = new Date(iso);
-  d.setMinutes(d.
-    tMinutes() - d.getTimezoneOffset());
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
   return d.toISOString().slice(0, 16);
 };
 

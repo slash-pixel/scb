@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 const LIENS = [
   { label: "Accueil", href: "/#accueil" },
+  { label: "Espace Parent", href: "/espace-parent" },
   { label: "À propos", href: "/#a-propos" },
   { label: "Filières", href: "/#filieres" },
   { label: "Galerie", href: "/#galerie" },

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, LogIn, Loader2 } from "lucide-react";
-import Footer from "./components/Footer";
+import Footer from "../components/Footer";
 
 // Importations nécessaires pour la Lightbox
 import Lightbox from "yet-another-react-lightbox";
