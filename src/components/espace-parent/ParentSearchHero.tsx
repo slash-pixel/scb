@@ -3,13 +3,11 @@ import { motion } from "framer-motion";
 import {
   Search,
   ChevronRight,
-  Server,
   Sparkles,
   X,
   HelpCircle,
   Clock,
 } from "lucide-react";
-import { LOCAL_API_URL, PROD_API_URL } from "../../lib/parentApi";
 import type { SearchHistoryItem } from "./parentUtils";
 
 interface ParentSearchHeroProps {
@@ -31,8 +29,6 @@ export default function ParentSearchHero({
   setSearchTerm,
   searchFilterType,
   setSearchFilterType,
-  apiServer,
-  onServerChange,
   loading,
   history,
   onSearch,
