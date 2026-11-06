@@ -5,7 +5,6 @@ import {
   FileSpreadsheet,
   CheckCircle2,
   Share2,
-  Printer,
   RotateCcw,
   Check,
 } from "lucide-react";
@@ -19,7 +18,6 @@ interface StudentProfileCardProps {
 
 export default function StudentProfileCard({
   studentData,
-  onPrint,
   onReset,
 }: StudentProfileCardProps) {
   const [copiedLink, setCopiedLink] = useState(false);
