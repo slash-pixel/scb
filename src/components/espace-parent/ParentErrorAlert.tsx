@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { AlertCircle, RotateCcw, HelpCircle, Server } from "lucide-react";
-import { LOCAL_API_URL, PROD_API_URL } from "../../lib/parentApi";
+import { AlertCircle, RotateCcw, HelpCircle } from "lucide-react";
 
 interface ParentErrorAlertProps {
   error: string;
@@ -14,8 +13,6 @@ interface ParentErrorAlertProps {
 export default function ParentErrorAlert({
   error,
   errorCode,
-  apiServer,
-  onServerChange,
   onRetry,
   onOpenHelp,
 }: ParentErrorAlertProps) {
@@ -50,19 +47,6 @@ export default function ParentErrorAlert({
 
         {/* Actions de résolution suggérées */}
         <div className="pt-2 flex flex-wrap items-center gap-3">
-          {errorCode === 0 && apiServer === LOCAL_API_URL && (
-            <button
-              type="button"
-              onClick={() => {
-                onServerChange(PROD_API_URL);
-                onRetry();
-              }}
-              className="px-4 py-2 rounded-lg bg-navy text-white text-xs font-semibold hover:bg-navy-deep transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <Server className="h-3.5 w-3.5 text-gold" />
-              <span>Basculer sur le serveur Render (Production)</span>
-            </button>
-          )}
 
           {errorCode === 503 && (
             <button

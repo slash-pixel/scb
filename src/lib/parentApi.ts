@@ -9,7 +9,7 @@ export const getDefaultApiBase = (): string => {
   //   return import.meta.env.VITE_API_PARENT_URL;
   // }
   // En local ou par défaut, pointe sur localhost:3000
-  return LOCAL_API_URL;
+  return PROD_API_URL;
 };
 
 export class ParentApiError extends Error {
@@ -63,7 +63,7 @@ export async function getStudentNotes(
         ? err.message
         : "Impossible de joindre le serveur de notes";
     throw new ParentApiError(
-      `Connexion impossible au serveur (${base}). Assurez-vous que le service est bien démarré ou vérifiez votre connexion réseau. (${errorMsg})`,
+      `Connexion impossible au serveur. Assurez-vous que le service est bien démarré ou vérifiez votre connexion réseau. (${errorMsg})`,
       0
     );
   }
