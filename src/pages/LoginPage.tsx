@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, ArrowRight, ShieldCheck } from "lucide-react";
-import Navbar from "./components/Navbar";
+import Navbar from "../components/Navbar";
 
 interface FloatingElement {
   id: number;
