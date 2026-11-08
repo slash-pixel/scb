@@ -1,6 +1,6 @@
 import type { ParentApiResponse, ParentStudentResult } from "../types/parent";
 
-export const LOCAL_API_URL = "http://localhost:3000";
+export const LOCAL_API_URL = "http://localhost:3800";
 export const PROD_API_URL = "https://note-o1lo.onrender.com";
 
 // Détection de l'URL par défaut : variable d'environnement ou localhost en dev

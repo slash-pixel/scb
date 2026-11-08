@@ -137,9 +137,9 @@ export default function ParentSearchHero({
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={
                   searchFilterType === "matricule"
-                    ? "Ex : 250143811 ou 480..."
+                    ? "Ex : 00000000 "
                     : searchFilterType === "nom"
-                    ? "Ex : ENENGUE..."
+                    ? "Ex : Jean..."
                     : "Matricule, code ou nom..."
                 }
                 className="flex-1 min-w-0 bg-transparent px-2 py-2 text-ink text-base sm:text-base font-medium placeholder:text-gray-400 focus:outline-none"
@@ -196,11 +196,11 @@ export default function ParentSearchHero({
                 type="button"
                 onClick={() => {
                   setSearchTerm("480");
-                  onSearch("480", { type: "matricule" });
+                  onSearch("000", { type: "matricule" });
                 }}
                 className="underline hover:text-gold transition-colors font-mono cursor-pointer"
               >
-                480
+                000
               </button>
               <span className="text-white/30">•</span>
               <button
