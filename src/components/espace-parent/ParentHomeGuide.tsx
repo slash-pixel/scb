@@ -14,7 +14,7 @@ export default function ParentHomeGuide() {
           </h3>
           <p className="text-xs text-ink-soft leading-relaxed">
             Le matricule se compose généralement de chiffres (ex :{" "}
-            <code className="font-mono text-navy font-bold">250143811</code>) ou du code
+            <code className="font-mono text-navy font-bold">0000000</code>) ou du code
             élève extrait du système académique (ex :{" "}
             <code className="font-mono text-navy font-bold">480</code>).
           </p>

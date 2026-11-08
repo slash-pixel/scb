@@ -1,10 +1,7 @@
 import { GraduationCap } from "lucide-react";
 
-interface ParentLoadingStateProps {
-  apiServer: string;
-}
 
-export default function ParentLoadingState({ apiServer }: ParentLoadingStateProps) {
+export default function ParentLoadingState() {
   return (
     <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
       <div className="relative">
@@ -16,7 +13,7 @@ export default function ParentLoadingState({ apiServer }: ParentLoadingStateProp
           Extraction du relevé de notes...
         </h3>
         <p className="text-xs font-mono text-ink-soft">
-          Recherche dans les registres académiques ({apiServer})
+          Recherche dans les registres académiques...
         </p>
       </div>
     </div>

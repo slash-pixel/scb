@@ -184,12 +184,12 @@ export default function ParentSearchHero({
               <button
                 type="button"
                 onClick={() => {
-                  setSearchTerm("250143811");
-                  onSearch("250143811", { type: "matricule" });
+                  setSearchTerm("0000000");
+                  onSearch("0000000", { type: "matricule" });
                 }}
                 className="underline hover:text-gold transition-colors font-mono cursor-pointer"
               >
-                250143811
+                0000000
               </button>
               <span className="text-white/30">•</span>
               <button

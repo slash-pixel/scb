@@ -4,8 +4,8 @@ import { AnimatePresence } from "framer-motion";
 import AppLayout from "../components/navket";
 import Footer from "../components/Footer";
 import {
+  getDefaultApiBase,
   getStudentNotes,
-  LOCAL_API_URL,
   ParentApiError,
 } from "../lib/parentApi";
 import type { ParentStudentResult, ParentNoteItem } from "../types/parent";
@@ -34,7 +34,7 @@ export default function EspaceParentPage() {
 
   // Choix du serveur (localhost:3000 par défaut, fallback vers Render)
   const [apiServer, setApiServer] = useState<string>(() => {
-    return localStorage.getItem("scb_parent_api_server") || LOCAL_API_URL;
+    return getDefaultApiBase();
   });
 
   // États de données
@@ -252,7 +252,7 @@ export default function EspaceParentPage() {
           </AnimatePresence>
 
           {/* ÉTAT : CHARGEMENT */}
-          {loading && <ParentLoadingState apiServer={apiServer} />}
+          {loading && <ParentLoadingState/>}
 
           {/* ÉTAT : RÉSULTAT OBTENU AVEC SUCCÈS */}
           {!loading && studentData && (
