@@ -19,8 +19,22 @@ export interface SearchHistoryItem {
   date: string;
 }
 
+/**
+ * Détermine si une note est réellement disponible (non nulle, non indéfinie et non vide).
+ */
+export const isNoteAvailable = (val: unknown): val is number => {
+  if (val === null || val === undefined || val === "") {
+    return false;
+  }
+  return !Number.isNaN(Number(val));
+};
+
+/**
+ * Formate une note numérique. Si la note n'existe pas (null, undefined, vide),
+ * retourne "—" sans jamais afficher de "0" par défaut ni de cellule vide.
+ */
 export const formatNote = (val: number | null | undefined): string => {
-  if (val === null || val === undefined || isNaN(Number(val))) {
+  if (!isNoteAvailable(val)) {
     return "—";
   }
   return Number(val).toFixed(2).replace(/\.00$/, "");
@@ -66,12 +80,7 @@ export const calculateStats = (notes: ParentNoteItem[]): StatsSummary => {
 
   notes.forEach((item) => {
     const coef = Number(item.coefficient) || 1;
-    const mg =
-      item.moyenneGenerale !== null &&
-      item.moyenneGenerale !== undefined &&
-      !isNaN(Number(item.moyenneGenerale))
-        ? Number(item.moyenneGenerale)
-        : null;
+    const mg = isNoteAvailable(item.moyenneGenerale) ? Number(item.moyenneGenerale) : null;
 
     if (mg !== null) {
       totalPoints += mg * coef;

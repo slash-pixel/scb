@@ -5,6 +5,11 @@ export interface ParentNoteItem {
   devoir1?: number | null;
   devoir2?: number | null;
   familleMatiere?: string;
+  interro1?: number | null;
+  interro2?: number | null;
+  interro3?: number | null;
+  interro4?: number | null;
+  interro5?: number | null;
   matiere: string;
   mention?: string | null;
   moyenneCoef?: number | null;

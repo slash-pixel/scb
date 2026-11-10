@@ -7,28 +7,23 @@ import {
   X,
   HelpCircle,
   Clock,
+  ShieldCheck,
 } from "lucide-react";
 import type { SearchHistoryItem } from "./parentUtils";
 
 interface ParentSearchHeroProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  searchFilterType: "all" | "matricule" | "nom";
-  setSearchFilterType: (type: "all" | "matricule" | "nom") => void;
-  apiServer: string;
-  onServerChange: (server: string) => void;
   loading: boolean;
   history: SearchHistoryItem[];
-  onSearch: (term: string, options?: { type?: "all" | "matricule" | "nom" }) => void;
-  onClearHistoryItem: (term: string, e: React.MouseEvent) => void;
+  onSearch: (matricule: string) => void;
+  onClearHistoryItem: (matricule: string, e: React.MouseEvent) => void;
   onOpenHelp: () => void;
 }
 
 export default function ParentSearchHero({
   searchTerm,
   setSearchTerm,
-  searchFilterType,
-  setSearchFilterType,
   loading,
   history,
   onSearch,
@@ -37,7 +32,9 @@ export default function ParentSearchHero({
 }: ParentSearchHeroProps) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onSearch(searchTerm);
+    if (searchTerm.trim()) {
+      onSearch(searchTerm.trim());
+    }
   };
 
   return (
@@ -79,13 +76,13 @@ export default function ParentSearchHero({
             transition={{ delay: 0.2 }}
             className="text-white/80 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto"
           >
-            Entrez le <strong>matricule</strong>, le <strong>code élève</strong> ou le{" "}
-            <strong>nom</strong> de votre enfant pour consulter immédiatement l'ensemble de ses
-            évaluations : interrogations, devoirs, compositions, moyennes et classements.
+            Renseignez le <strong>matricule officiel</strong> de votre enfant pour
+            consulter son dossier académique complet : interrogations, devoirs,
+            compositions, moyennes et classements.
           </motion.p>
         </div>
 
-        {/* BARRE DE RECHERCHE PRINCIPALE */}
+        {/* BARRE DE RECHERCHE STRICTEMENT PAR MATRICULE */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -96,33 +93,15 @@ export default function ParentSearchHero({
             onSubmit={handleSubmit}
             className="relative bg-white w-full p-2.5 sm:p-3 rounded-2xl shadow-2xl border-2 border-gold/40 transition-all focus-within:border-gold focus-within:ring-4 focus-within:ring-gold/20"
           >
-            {/* Sélecteur de type de recherche */}
-            <div className="flex flex-wrap items-center gap-1.5 px-2 pb-2 border-b border-gray-100 text-xs font-medium text-ink-soft">
-              <span className="text-[11px] uppercase font-mono tracking-wider text-navy font-semibold mr-1 shrink-0">
-                Rechercher par :
+            {/* Indicateur de recherche par matricule */}
+            <div className="flex items-center justify-between px-2 pb-2 border-b border-gray-100 text-xs">
+              <span className="inline-flex items-center gap-1.5 text-[11px] uppercase font-mono tracking-wider text-navy font-bold">
+                <ShieldCheck className="h-3.5 w-3.5 text-gold" />
+                Recherche par matricule élève
               </span>
-              <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 max-w-full">
-                {(
-                  [
-                    { id: "all", label: "Automatique (Tous)" },
-                    { id: "matricule", label: "Matricule / Code" },
-                    { id: "nom", label: "Nom de l'élève" },
-                  ] as const
-                ).map((type) => (
-                  <button
-                    type="button"
-                    key={type.id}
-                    onClick={() => setSearchFilterType(type.id)}
-                    className={`px-2.5 py-1.5 rounded-lg text-[11px] sm:text-xs transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                      searchFilterType === type.id
-                        ? "bg-navy-deep text-white font-semibold shadow-sm"
-                        : "text-ink-soft hover:bg-gray-100 hover:text-navy"
-                    }`}
-                  >
-                    {type.label}
-                  </button>
-                ))}
-              </div>
+              <span className="text-[11px] text-ink-soft hidden sm:inline">
+                Identifiant unique sécurisé
+              </span>
             </div>
 
             {/* Champ de saisie et bouton de validation */}
@@ -135,14 +114,8 @@ export default function ParentSearchHero({
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={
-                  searchFilterType === "matricule"
-                    ? "Ex : 00000000 "
-                    : searchFilterType === "nom"
-                    ? "Ex : Jean..."
-                    : "Matricule, code ou nom..."
-                }
-                className="flex-1 min-w-0 bg-transparent px-2 py-2 text-ink text-base sm:text-base font-medium placeholder:text-gray-400 focus:outline-none"
+                placeholder="Ex : 480 ou 0000000..."
+                className="flex-1 min-w-0 bg-transparent px-2 py-2 text-ink text-base sm:text-base font-semibold placeholder:text-gray-400 placeholder:font-normal focus:outline-none"
                 autoFocus
               />
 
@@ -184,34 +157,23 @@ export default function ParentSearchHero({
               <button
                 type="button"
                 onClick={() => {
+                  setSearchTerm("480");
+                  onSearch("480");
+                }}
+                className="underline hover:text-gold transition-colors font-mono cursor-pointer"
+              >
+                480
+              </button>
+              <span className="text-white/30">•</span>
+              <button
+                type="button"
+                onClick={() => {
                   setSearchTerm("0000000");
-                  onSearch("0000000", { type: "matricule" });
+                  onSearch("0000000");
                 }}
                 className="underline hover:text-gold transition-colors font-mono cursor-pointer"
               >
                 0000000
-              </button>
-              <span className="text-white/30">•</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchTerm("480");
-                  onSearch("000", { type: "matricule" });
-                }}
-                className="underline hover:text-gold transition-colors font-mono cursor-pointer"
-              >
-                000
-              </button>
-              <span className="text-white/30">•</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchTerm("ENENGUE");
-                  onSearch("ENENGUE", { type: "nom" });
-                }}
-                className="underline hover:text-gold transition-colors cursor-pointer"
-              >
-                ENENGUE
               </button>
             </div>
 

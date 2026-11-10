@@ -23,7 +23,7 @@ export default function ParentHelpModal({ isOpen, onClose }: ParentHelpModalProp
                   <HelpCircle className="h-5 w-5" />
                 </div>
                 <h3 className="font-display text-lg font-bold text-navy-deep">
-                  Où trouver mes identifiants ?
+                  Où trouver le matricule de l'élève ?
                 </h3>
               </div>
               <button
@@ -42,7 +42,7 @@ export default function ParentHelpModal({ isOpen, onClose }: ParentHelpModalProp
                 </span>
                 <div>
                   <strong className="text-navy-deep">Sur le carnet de correspondance :</strong>
-                  <p>Le matricule officiel est inscrit sur la première page de couverture.</p>
+                  <p>Le matricule officiel est inscrit sur la page de garde ou la première page de couverture.</p>
                 </div>
               </div>
 
@@ -53,8 +53,8 @@ export default function ParentHelpModal({ isOpen, onClose }: ParentHelpModalProp
                 <div>
                   <strong className="text-navy-deep">Sur le reçu d'inscription :</strong>
                   <p>
-                    La quittance bancaire ou le reçu de scolarité remis par l'économat mentionne le
-                    numéro de matricule ou le code élève.
+                    La quittance bancaire ou le reçu de scolarité délivré par l'économat mentionne le
+                    numéro de matricule officiel de l'élève.
                   </p>
                 </div>
               </div>
@@ -64,11 +64,10 @@ export default function ParentHelpModal({ isOpen, onClose }: ParentHelpModalProp
                   3
                 </span>
                 <div>
-                  <strong className="text-navy-deep">Par le nom de l'élève :</strong>
+                  <strong className="text-navy-deep">Auprès du secrétariat :</strong>
                   <p>
-                    Si vous n'avez pas le matricule sous la main, tapez simplement le nom de
-                    famille dans la barre de recherche (ex:{" "}
-                    <span className="font-semibold text-navy">ENENGUE</span>).
+                    Si vous ne disposez pas du document physique, contactez directement l'administration
+                    du Collège qui vous communiquera le matricule après identification du parent ou tuteur légal.
                   </p>
                 </div>
               </div>

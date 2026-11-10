@@ -1,4 +1,4 @@
-import { User, BookOpen, Printer, HelpCircle } from "lucide-react";
+import { User, ShieldCheck, Printer, HelpCircle } from "lucide-react";
 
 export default function ParentHomeGuide() {
   return (
@@ -13,24 +13,22 @@ export default function ParentHomeGuide() {
             Matricule Officiel
           </h3>
           <p className="text-xs text-ink-soft leading-relaxed">
-            Le matricule se compose généralement de chiffres (ex :{" "}
-            <code className="font-mono text-navy font-bold">0000000</code>) ou du code
-            élève extrait du système académique (ex :{" "}
-            <code className="font-mono text-navy font-bold">480</code>).
+            Le matricule est le numéro d'identification scolaire unique de votre enfant
+            (ex : <code className="font-mono text-navy font-bold">480</code> ou{" "}
+            <code className="font-mono text-navy font-bold">0000000</code>).
           </p>
         </div>
 
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200 space-y-3 hover:border-gold/40 transition-colors">
           <div className="h-12 w-12 rounded-2xl bg-amber-50 text-gold flex items-center justify-center">
-            <BookOpen className="h-6 w-6" />
+            <ShieldCheck className="h-6 w-6" />
           </div>
           <h3 className="font-display text-lg font-bold text-navy-deep">
-            Recherche par Nom
+            Confidentialité Garantie
           </h3>
           <p className="text-xs text-ink-soft leading-relaxed">
-            Vous pouvez également rechercher en tapant le nom de famille de votre enfant
-            (ex : <span className="font-semibold text-navy">ENENGUE</span>). La recherche est
-            insensible à la casse.
+            Pour assurer la protection rigoureuse des données des élèves, l'accès au
+            relevé s'effectue exclusivement au moyen de son matricule personnel.
           </p>
         </div>
 
@@ -42,8 +40,8 @@ export default function ParentHomeGuide() {
             Impression & Export
           </h3>
           <p className="text-xs text-ink-soft leading-relaxed">
-            Une fois le relevé affiché, vous pouvez l'imprimer ou l'exporter directement en
-            PDF conforme au format officiel de l'établissement en un seul clic.
+            Dès l'affichage du relevé, vous pouvez l'imprimer ou l'enregistrer en PDF
+            conforme à la maquette officielle du Collège en un seul clic.
           </p>
         </div>
       </div>
@@ -71,7 +69,8 @@ export default function ParentHomeGuide() {
             </h4>
             <p className="leading-relaxed">
               Le matricule officiel figure sur le carnet de correspondance, les reçus de
-              paiement de scolarité ainsi que sur les bulletins des trimestres précédents.
+              paiement de scolarité remis par l'économat ainsi que sur les bulletins des
+              trimestres précédents.
             </p>
           </div>
 
@@ -80,19 +79,18 @@ export default function ParentHomeGuide() {
               À quelle fréquence les notes sont-elles actualisées ?
             </h4>
             <p className="leading-relaxed">
-              Les notes sont synchronisées dès que les professeurs ont validé les saisies
-              auprès de la direction des études lors des conseils pédagogiques.
+              Les notes sont synchronisées au fur et à mesure de leur validation par les
+              enseignants et la direction des études de l'établissement.
             </p>
           </div>
 
           <div className="space-y-1.5 p-4 rounded-2xl bg-paper">
             <h4 className="font-bold text-navy-deep text-sm">
-              Que signifie l'erreur 503 "Fichier en cours d'initialisation" ?
+              Que faire si le matricule n'affiche aucun relevé ?
             </h4>
             <p className="leading-relaxed">
-              Cette mention indique que le serveur est en train de charger en mémoire le
-              fichier des notes le plus récent. Il suffit d'attendre 15 à 30 secondes et de
-              relancer la recherche.
+              Vérifiez attentivement la saisie du numéro. Si le problème persiste, il se peut
+              que les notes de la période soient encore en cours de saisie administrative.
             </p>
           </div>
 

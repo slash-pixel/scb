@@ -1,16 +1,61 @@
+import { useMemo } from "react";
 import { BookOpen } from "lucide-react";
 import type { ParentNoteItem } from "../../types/parent";
-import { formatNote, getMentionStyle } from "./parentUtils";
+import { formatNote, getMentionStyle, isNoteAvailable } from "./parentUtils";
 
 interface NotesFamilySectionProps {
   family: string;
   items: ParentNoteItem[];
 }
 
+interface EvalColumnDef {
+  key: keyof ParentNoteItem;
+  label: string;
+  shortLabel: string;
+  mobileLabel: string;
+}
+
+const ALL_EVAL_COLUMNS: EvalColumnDef[] = [
+  { key: "interro1", label: "Interro 1", shortLabel: "Int. 1", mobileLabel: "Int. 1" },
+  { key: "interro2", label: "Interro 2", shortLabel: "Int. 2", mobileLabel: "Int. 2" },
+  { key: "interro3", label: "Interro 3", shortLabel: "Int. 3", mobileLabel: "Int. 3" },
+  { key: "interro4", label: "Interro 4", shortLabel: "Int. 4", mobileLabel: "Int. 4" },
+  { key: "interro5", label: "Interro 5", shortLabel: "Int. 5", mobileLabel: "Int. 5" },
+  { key: "moyenneInterro", label: "Moy. Interros", shortLabel: "Moy. Int.", mobileLabel: "Moy. Int." },
+  { key: "devoir1", label: "Devoir 1", shortLabel: "Dev. 1", mobileLabel: "Dev. 1" },
+  { key: "devoir2", label: "Devoir 2", shortLabel: "Dev. 2", mobileLabel: "Dev. 2" },
+  { key: "composition", label: "Composition", shortLabel: "Compo", mobileLabel: "Compo" },
+];
+
 export default function NotesFamilySection({
   family,
   items,
 }: NotesFamilySectionProps) {
+  // Détection dynamique des colonnes d'évaluations disponibles pour ce groupe
+  // (masque complètement toute évaluation absente, null ou non définie)
+  const activeEvalColumns = useMemo(() => {
+    return ALL_EVAL_COLUMNS.filter((col) =>
+      items.some((item) => isNoteAvailable(item[col.key]))
+    );
+  }, [items]);
+
+  // Détection de présence des colonnes de synthèse
+  const hasMoyenneCoef = useMemo(
+    () => items.some((item) => isNoteAvailable(item.moyenneCoef)),
+    [items]
+  );
+  const hasRang = useMemo(
+    () => items.some((item) => item.rang && item.rang.trim() !== ""),
+    [items]
+  );
+  const hasMention = useMemo(
+    () =>
+      items.some(
+        (item) => (item.mention && item.mention.trim() !== "") || isNoteAvailable(item.moyenneGenerale)
+      ),
+    [items]
+  );
+
   return (
     <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
       {/* En-tête de la famille de matières */}
@@ -26,24 +71,36 @@ export default function NotesFamilySection({
         </span>
       </div>
 
-      {/* VUE TABLEAU (Desktop & Tablette) */}
+      {/* VUE TABLEAU (Desktop & Tablette) avec colonnes dynamiques */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-xs border-collapse">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200 font-mono text-[11px] text-ink-soft uppercase tracking-wider">
-              <th className="py-3.5 px-4 font-bold text-navy-deep">Matière</th>
+              <th className="py-3.5 px-4 font-bold text-navy-deep sticky left-0 bg-gray-50 z-10">
+                Matière
+              </th>
               <th className="py-3.5 px-3 text-center">Trimestre</th>
               <th className="py-3.5 px-3 text-center">Coef</th>
-              <th className="py-3.5 px-3 text-center">Interros</th>
-              <th className="py-3.5 px-3 text-center">Devoir 1</th>
-              <th className="py-3.5 px-3 text-center">Devoir 2</th>
-              <th className="py-3.5 px-3 text-center">Compo</th>
+
+              {/* Colonnes d'évaluation dynamiques (Interros 1-5, Moyenne, Devoirs, Compo) */}
+              {activeEvalColumns.map((col) => (
+                <th
+                  key={col.key}
+                  className="py-3.5 px-3 text-center"
+                  title={col.label}
+                >
+                  {col.shortLabel}
+                </th>
+              ))}
+
               <th className="py-3.5 px-4 text-center font-bold text-navy-deep bg-blue-50/50">
                 Moy. Générale
               </th>
-              <th className="py-3.5 px-3 text-center">Moy. Coef</th>
-              <th className="py-3.5 px-3 text-center">Rang</th>
-              <th className="py-3.5 px-4 text-center">Mention</th>
+              {hasMoyenneCoef && (
+                <th className="py-3.5 px-3 text-center">Moy. Coef</th>
+              )}
+              {hasRang && <th className="py-3.5 px-3 text-center">Rang</th>}
+              {hasMention && <th className="py-3.5 px-4 text-center">Mention</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 font-sans">
@@ -52,129 +109,182 @@ export default function NotesFamilySection({
                 key={`${item.matiere}-${item.trimestre}-${idx}`}
                 className="hover:bg-amber-50/40 transition-colors"
               >
-                <td className="py-3.5 px-4 font-semibold text-navy-deep text-sm">
+                <td className="py-3.5 px-4 font-semibold text-navy-deep text-sm sticky left-0 bg-white hover:bg-amber-50/40 z-10">
                   {item.matiere}
                 </td>
-                <td className="py-3.5 px-3 text-center font-mono text-ink-soft">
+                <td className="py-3.5 px-3 text-center font-mono text-ink-soft whitespace-nowrap">
                   {item.trimestre || "—"}
                 </td>
                 <td className="py-3.5 px-3 text-center font-mono font-bold text-navy-deep">
                   {item.coefficient}
                 </td>
-                <td className="py-3.5 px-3 text-center font-mono text-ink-soft">
-                  {formatNote(item.moyenneInterro)}
-                </td>
-                <td className="py-3.5 px-3 text-center font-mono text-ink-soft">
-                  {formatNote(item.devoir1)}
-                </td>
-                <td className="py-3.5 px-3 text-center font-mono text-ink-soft">
-                  {formatNote(item.devoir2)}
-                </td>
-                <td className="py-3.5 px-3 text-center font-mono text-ink-soft">
-                  {formatNote(item.composition)}
-                </td>
+
+                {/* Valeurs des évaluations dynamiques */}
+                {activeEvalColumns.map((col) => {
+                  const val = item[col.key];
+                  const hasVal = isNoteAvailable(val);
+                  return (
+                    <td
+                      key={col.key}
+                      className="py-3.5 px-3 text-center font-mono"
+                    >
+                      {hasVal ? (
+                        <span className="text-ink font-semibold">
+                          {formatNote(val as number)}
+                        </span>
+                      ) : (
+                        <span className="text-gray-300 select-none">—</span>
+                      )}
+                    </td>
+                  );
+                })}
+
                 <td className="py-3.5 px-4 text-center bg-blue-50/50">
-                  <span className="font-display font-bold text-base text-navy-deep">
-                    {formatNote(item.moyenneGenerale)}
-                  </span>
-                  <span className="font-mono text-[10px] text-ink-soft ml-1">/20</span>
+                  {isNoteAvailable(item.moyenneGenerale) ? (
+                    <>
+                      <span className="font-display font-bold text-base text-navy-deep">
+                        {formatNote(item.moyenneGenerale)}
+                      </span>
+                      <span className="font-mono text-[10px] text-ink-soft ml-1">/20</span>
+                    </>
+                  ) : (
+                    <span className="text-gray-300 font-mono select-none">—</span>
+                  )}
                 </td>
-                <td className="py-3.5 px-3 text-center font-mono font-semibold text-navy-deep">
-                  {formatNote(item.moyenneCoef)}
-                </td>
-                <td className="py-3.5 px-3 text-center font-mono font-bold text-navy">
-                  {item.rang || "—"}
-                </td>
-                <td className="py-3.5 px-4 text-center">
-                  <span
-                    className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold border ${getMentionStyle(
-                      item.mention,
-                      item.moyenneGenerale
-                    )}`}
-                  >
-                    {item.mention ||
-                      (item.moyenneGenerale && item.moyenneGenerale >= 10 ? "Validé" : "—")}
-                  </span>
-                </td>
+
+                {hasMoyenneCoef && (
+                  <td className="py-3.5 px-3 text-center font-mono font-semibold text-navy-deep">
+                    {formatNote(item.moyenneCoef)}
+                  </td>
+                )}
+
+                {hasRang && (
+                  <td className="py-3.5 px-3 text-center font-mono font-bold text-navy">
+                    {item.rang || "—"}
+                  </td>
+                )}
+
+                {hasMention && (
+                  <td className="py-3.5 px-4 text-center">
+                    <span
+                      className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold border ${getMentionStyle(
+                        item.mention,
+                        item.moyenneGenerale
+                      )}`}
+                    >
+                      {item.mention ||
+                        (isNoteAvailable(item.moyenneGenerale) && item.moyenneGenerale >= 10
+                          ? "Validé"
+                          : "—")}
+                    </span>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* VUE MOBILE : Cartes adaptées aux smartphones */}
+      {/* VUE MOBILE : Cartes adaptées aux smartphones avec champs conditionnels */}
       <div className="md:hidden divide-y divide-gray-100">
-        {items.map((item, idx) => (
-          <div key={`mobile-${item.matiere}-${item.trimestre}-${idx}`} className="p-4 space-y-3">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <h4 className="font-display text-base font-bold text-navy-deep">
-                  {item.matiere}
-                </h4>
-                <div className="flex items-center gap-2 mt-0.5 text-xs font-mono text-ink-soft">
-                  <span className="text-gold font-bold">Coef {item.coefficient}</span>
-                  {item.trimestre && (
-                    <>
-                      <span>•</span>
-                      <span>{item.trimestre}</span>
-                    </>
+        {items.map((item, idx) => {
+          // Filtrer uniquement les évaluations disponibles pour cette matière
+          const itemAvailableEvals = ALL_EVAL_COLUMNS.filter((col) =>
+            isNoteAvailable(item[col.key])
+          );
+
+          return (
+            <div
+              key={`mobile-${item.matiere}-${item.trimestre}-${idx}`}
+              className="p-4 space-y-3"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <h4 className="font-display text-base font-bold text-navy-deep">
+                    {item.matiere}
+                  </h4>
+                  <div className="flex items-center gap-2 mt-0.5 text-xs font-mono text-ink-soft">
+                    <span className="text-gold font-bold">Coef {item.coefficient}</span>
+                    {item.trimestre && (
+                      <>
+                        <span>•</span>
+                        <span>{item.trimestre}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="text-right shrink-0">
+                  <div className="font-display text-lg font-bold text-navy-deep">
+                    {isNoteAvailable(item.moyenneGenerale) ? (
+                      <>
+                        {formatNote(item.moyenneGenerale)}
+                        <span className="text-xs font-mono text-ink-soft font-normal ml-0.5">
+                          /20
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-gray-300 font-mono">—</span>
+                    )}
+                  </div>
+                  {(item.mention || isNoteAvailable(item.moyenneGenerale)) && (
+                    <span
+                      className={`inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold border ${getMentionStyle(
+                        item.mention,
+                        item.moyenneGenerale
+                      )}`}
+                    >
+                      {item.mention ||
+                        (isNoteAvailable(item.moyenneGenerale) && item.moyenneGenerale >= 10
+                          ? "Validé"
+                          : "—")}
+                    </span>
                   )}
                 </div>
               </div>
 
-              <div className="text-right">
-                <div className="font-display text-lg font-bold text-navy-deep">
-                  {formatNote(item.moyenneGenerale)}
-                  <span className="text-xs font-mono text-ink-soft font-normal">/20</span>
+              {/* Grille d'évaluations conditionnelles : n'affiche QUE les évaluations présentes */}
+              {itemAvailableEvals.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-paper p-2.5 rounded-xl text-center text-xs font-mono">
+                  {itemAvailableEvals.map((col) => (
+                    <div
+                      key={col.key}
+                      className="bg-white/80 p-1.5 rounded-lg border border-gray-100 flex flex-col justify-center"
+                    >
+                      <span className="block text-[10px] text-ink-soft uppercase font-semibold">
+                        {col.mobileLabel}
+                      </span>
+                      <strong className="text-navy-deep font-bold text-xs mt-0.5">
+                        {formatNote(item[col.key] as number)}
+                      </strong>
+                    </div>
+                  ))}
                 </div>
-                <span
-                  className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold border ${getMentionStyle(
-                    item.mention,
-                    item.moyenneGenerale
-                  )}`}
-                >
-                  {item.mention || "—"}
-                </span>
-              </div>
-            </div>
+              )}
 
-            {/* Grille des sous-notes */}
-            <div className="grid grid-cols-4 gap-2 bg-paper p-2.5 rounded-xl text-center text-xs font-mono">
-              <div>
-                <span className="block text-[10px] text-ink-soft uppercase">Interro</span>
-                <strong className="text-ink font-semibold">
-                  {formatNote(item.moyenneInterro)}
-                </strong>
-              </div>
-              <div>
-                <span className="block text-[10px] text-ink-soft uppercase">Dev. 1</span>
-                <strong className="text-ink font-semibold">{formatNote(item.devoir1)}</strong>
-              </div>
-              <div>
-                <span className="block text-[10px] text-ink-soft uppercase">Dev. 2</span>
-                <strong className="text-ink font-semibold">{formatNote(item.devoir2)}</strong>
-              </div>
-              <div>
-                <span className="block text-[10px] text-ink-soft uppercase">Compo</span>
-                <strong className="text-ink font-semibold">
-                  {formatNote(item.composition)}
-                </strong>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between text-xs font-mono text-ink-soft pt-1">
-              <span>
-                Moyenne Coeff :{" "}
-                <strong className="text-navy-deep">{formatNote(item.moyenneCoef)}</strong>
-              </span>
-              {item.rang && (
-                <span>
-                  Rang : <strong className="text-gold font-bold">{item.rang}</strong>
-                </span>
+              {/* Synthèse : Moyenne Coef et Rang */}
+              {(isNoteAvailable(item.moyenneCoef) || item.rang) && (
+                <div className="flex items-center justify-between text-xs font-mono text-ink-soft pt-1 border-t border-gray-50">
+                  {isNoteAvailable(item.moyenneCoef) ? (
+                    <span>
+                      Moyenne Coeff :{" "}
+                      <strong className="text-navy-deep font-bold">
+                        {formatNote(item.moyenneCoef)}
+                      </strong>
+                    </span>
+                  ) : (
+                    <span />
+                  )}
+                  {item.rang && (
+                    <span>
+                      Rang : <strong className="text-gold font-bold">{item.rang}</strong>
+                    </span>
+                  )}
+                </div>
               )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

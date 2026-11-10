@@ -12,7 +12,6 @@ import type { ParentStudentResult, ParentNoteItem } from "../types/parent";
 import {
   ParentSearchHero,
   StudentProfileCard,
-  StudentStatsKpis,
   TrimestreFilter,
   NotesFamilySection,
   ParentHomeGuide,
@@ -21,21 +20,18 @@ import {
   ParentLoadingState,
   PrintHeader,
   PrintFooter,
-  calculateStats,
+  // calculateStats,
   type SearchHistoryItem,
 } from "../components/espace-parent";
 
 export default function EspaceParentPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Entrée de recherche
+  // Entrée de recherche (strictement le matricule)
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchFilterType, setSearchFilterType] = useState<"all" | "matricule" | "nom">("all");
 
-  // Choix du serveur (localhost:3000 par défaut, fallback vers Render)
-  const [apiServer, setApiServer] = useState<string>(() => {
-    return getDefaultApiBase();
-  });
+  // Base API configurée
+  const [apiServer] = useState<string>(() => getDefaultApiBase());
 
   // États de données
   const [studentData, setStudentData] = useState<ParentStudentResult | null>(null);
@@ -46,7 +42,7 @@ export default function EspaceParentPage() {
   // Filtre trimestre
   const [selectedTrimestre, setSelectedTrimestre] = useState<string>("all");
 
-  // Historique des recherches dans localStorage
+  // Historique des recherches de matricules dans localStorage
   const [history, setHistory] = useState<SearchHistoryItem[]>(() => {
     try {
       const stored = localStorage.getItem("scb_parent_search_history");
@@ -59,36 +55,21 @@ export default function EspaceParentPage() {
   // Modal d'aide
   const [showHelpModal, setShowHelpModal] = useState(false);
 
-  // Synchronisation avec l'URL (si un parent arrive avec ?matricule=... ou ?q=...)
+  // Synchronisation avec l'URL (si un parent arrive avec ?matricule=...)
   useEffect(() => {
-    const qParam =
-      searchParams.get("q") || searchParams.get("matricule") || searchParams.get("nom");
-    if (qParam && !studentData && !loading) {
-      setSearchTerm(qParam);
-      const activeType = searchParams.get("matricule")
-        ? "matricule"
-        : searchParams.get("nom")
-        ? "nom"
-        : "all";
-      setSearchFilterType(activeType);
-      performSearch(qParam, { type: activeType });
+    const matriculeParam =
+      searchParams.get("matricule") || searchParams.get("q");
+    if (matriculeParam && !studentData && !loading) {
+      setSearchTerm(matriculeParam);
+      performSearch(matriculeParam);
     }
   }, [searchParams]);
 
-  // Sauvegarde du serveur sélectionné
-  const handleServerChange = (newServer: string) => {
-    setApiServer(newServer);
-    localStorage.setItem("scb_parent_api_server", newServer);
-  };
-
-  // Exécution de la recherche
-  const performSearch = async (
-    termToSearch: string,
-    options?: { type?: "all" | "matricule" | "nom"; overrideServer?: string }
-  ) => {
-    const term = termToSearch.trim();
-    if (!term) {
-      setError("Veuillez renseigner un matricule, code élève ou nom.");
+  // Exécution de la recherche strictement par matricule
+  const performSearch = async (matriculeToSearch: string) => {
+    const matricule = matriculeToSearch.trim();
+    if (!matricule) {
+      setError("Veuillez renseigner le matricule officiel de l'élève.");
       setErrorCode(400);
       return;
     }
@@ -97,39 +78,25 @@ export default function EspaceParentPage() {
     setError(null);
     setErrorCode(null);
 
-    const activeType = options?.type || searchFilterType;
-    const serverToUse = options?.overrideServer || apiServer;
-
     try {
-      const result = await getStudentNotes(term, {
-        apiBase: serverToUse,
-        type: activeType,
-      });
+      const result = await getStudentNotes(matricule, apiServer);
 
       setStudentData(result);
       setSelectedTrimestre("all");
 
-      // Mise à jour de l'URL pour partage facile
-      if (activeType === "matricule") {
-        setSearchParams({ matricule: term });
-      } else if (activeType === "nom") {
-        setSearchParams({ nom: term });
-      } else {
-        setSearchParams({ q: term });
-      }
+      // Mise à jour de l'URL pour partage facile avec le matricule uniquement
+      setSearchParams({ matricule });
 
       // Enregistrement dans l'historique
-      saveToHistory(term, result.nomEleve);
+      saveToHistory(matricule, result.nomEleve);
     } catch (err) {
       setStudentData(null);
       if (err instanceof ParentApiError) {
         setError(err.message);
         setErrorCode(err.statusCode);
-      } else if (err instanceof Error) {
-        setError(err.message);
-        setErrorCode(500);
       } else {
-        setError("Une erreur inattendue est survenue.");
+        // Message d'erreur épuré sans stack trace ni données sensibles
+        setError("Une erreur inattendue est survenue lors de la recherche. Veuillez réessayer.");
         setErrorCode(500);
       }
     } finally {
@@ -137,12 +104,14 @@ export default function EspaceParentPage() {
     }
   };
 
-  const saveToHistory = (term: string, studentName?: string) => {
+  const saveToHistory = (matricule: string, studentName?: string) => {
     try {
-      const current = history.filter((h) => h.term.toLowerCase() !== term.toLowerCase());
+      const current = history.filter(
+        (h) => h.term.toLowerCase() !== matricule.toLowerCase()
+      );
       const updated: SearchHistoryItem[] = [
         {
-          term,
+          term: matricule,
           name: studentName,
           date: new Date().toLocaleDateString("fr-FR", {
             day: "numeric",
@@ -195,7 +164,7 @@ export default function EspaceParentPage() {
   }, [filteredNotes]);
 
   // Statistiques calculées (moyenne pondérée, min, max, total coefs)
-  const stats = useMemo(() => calculateStats(filteredNotes), [filteredNotes]);
+  // const stats = useMemo(() => calculateStats(filteredNotes), [filteredNotes]);
 
   // Déclencheur impression
   const handlePrint = () => {
@@ -220,14 +189,10 @@ export default function EspaceParentPage() {
       <PrintHeader anneeScolaire={studentData?.anneeScolaire} />
 
       <main className="flex-1">
-        {/* HERO BANNER & CONSOLE DE RECHERCHE */}
+        {/* HERO BANNER & CONSOLE DE RECHERCHE STRICTEMENT MATRICULE */}
         <ParentSearchHero
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          searchFilterType={searchFilterType}
-          setSearchFilterType={setSearchFilterType}
-          apiServer={apiServer}
-          onServerChange={handleServerChange}
           loading={loading}
           history={history}
           onSearch={performSearch}
@@ -237,14 +202,12 @@ export default function EspaceParentPage() {
 
         {/* CORPS DE PAGE : RÉSULTATS, ERREURS OU GUIDES */}
         <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          {/* ÉTAT : ERREUR */}
+          {/* ÉTAT : ERREUR ÉPURÉE ET SÉCURISÉE */}
           <AnimatePresence>
             {error && (
               <ParentErrorAlert
                 error={error}
                 errorCode={errorCode}
-                apiServer={apiServer}
-                onServerChange={handleServerChange}
                 onRetry={() => performSearch(searchTerm)}
                 onOpenHelp={() => setShowHelpModal(true)}
               />
@@ -252,7 +215,7 @@ export default function EspaceParentPage() {
           </AnimatePresence>
 
           {/* ÉTAT : CHARGEMENT */}
-          {loading && <ParentLoadingState/>}
+          {loading && <ParentLoadingState />}
 
           {/* ÉTAT : RÉSULTAT OBTENU AVEC SUCCÈS */}
           {!loading && studentData && (
@@ -265,7 +228,6 @@ export default function EspaceParentPage() {
                   onPrint={handlePrint}
                   onReset={handleReset}
                 />
-                <StudentStatsKpis stats={stats} />
               </div>
 
               {/* BARRE D'ONGLETS / FILTRES PAR TRIMESTRE */}
@@ -278,7 +240,7 @@ export default function EspaceParentPage() {
                 notes={studentData.notes}
               />
 
-              {/* RELEVÉ DES NOTES : TABLEAU DÉTAILLÉ PAR FAMILLE */}
+              {/* RELEVÉ DES NOTES : TABLEAU DÉTAILLÉ PAR FAMILLE AVEC ÉVALUATIONS DYNAMIQUES */}
               <div className="space-y-8">
                 {Object.entries(notesByFamily).map(([family, items]) => (
                   <NotesFamilySection key={family} family={family} items={items} />

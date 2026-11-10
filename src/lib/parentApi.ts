@@ -1,6 +1,6 @@
 import type { ParentApiResponse, ParentStudentResult } from "../types/parent";
 
-export const LOCAL_API_URL = "http://localhost:3800";
+export const LOCAL_API_URL = "http://localhost:3000";
 export const PROD_API_URL = "https://note-o1lo.onrender.com";
 
 // Détection de l'URL par défaut : variable d'environnement ou localhost en dev
@@ -8,7 +8,6 @@ export const getDefaultApiBase = (): string => {
   // if (import.meta.env.VITE_API_PARENT_URL) {
   //   return import.meta.env.VITE_API_PARENT_URL;
   // }
-  // En local ou par défaut, pointe sur localhost:3000
   return PROD_API_URL;
 };
 
@@ -21,32 +20,22 @@ export class ParentApiError extends Error {
   }
 }
 
-export interface SearchOptions {
-  apiBase?: string;
-  type?: "all" | "matricule" | "nom";
-}
-
+/**
+ * Récupère le relevé de notes d'un élève via son matricule officiel uniquement.
+ * Appel : /api/parents/notes?matricule={matricule}
+ */
 export async function getStudentNotes(
-  searchTerm: string,
-  options?: SearchOptions
+  matricule: string,
+  apiBase?: string
 ): Promise<ParentStudentResult> {
-  const trimmed = searchTerm.trim();
+  const trimmed = matricule.trim();
   if (!trimmed) {
-    throw new ParentApiError("Veuillez saisir un matricule, un code élève ou un nom.", 400);
+    throw new ParentApiError("Veuillez saisir le matricule de l'élève.", 400);
   }
 
-  const base = options?.apiBase || getDefaultApiBase();
+  const base = apiBase || getDefaultApiBase();
   const url = new URL("/api/parents/notes", base);
-
-  const searchType = options?.type || "all";
-  if (searchType === "matricule") {
-    url.searchParams.set("matricule", trimmed);
-  } else if (searchType === "nom") {
-    url.searchParams.set("nom", trimmed);
-  } else {
-    // Mode global 'q'
-    url.searchParams.set("q", trimmed);
-  }
+  url.searchParams.set("matricule", trimmed);
 
   let response: Response;
   try {
@@ -56,47 +45,51 @@ export async function getStudentNotes(
         Accept: "application/json",
       },
     });
-  } catch (err: unknown) {
-    // Si c'est un échec de connexion (ex: backend local non démarré)
-    const errorMsg =
-      err instanceof Error
-        ? err.message
-        : "Impossible de joindre le serveur de notes";
+  } catch {
+    // Sécurité : masque complètement l'URL, les ports et les stack traces techniques
     throw new ParentApiError(
-      `Connexion impossible au serveur. Assurez-vous que le service est bien démarré ou vérifiez votre connexion réseau. (${errorMsg})`,
+      "Impossible de joindre le serveur de notes. Veuillez vérifier votre connexion Internet et réessayer dans quelques instants.",
       0
     );
   }
 
   if (response.status === 404) {
     throw new ParentApiError(
-      `Aucun élève trouvé correspondant à "${trimmed}". Veuillez vérifier l'exactitude du matricule ou du nom.`,
+      `Aucun élève trouvé avec le matricule "${trimmed}". Veuillez vérifier l'exactitude du matricule saisi.`,
       404
     );
   }
 
   if (response.status === 400) {
     throw new ParentApiError(
-      "Paramètre de recherche invalide ou manquant. Merci de renseigner un matricule ou un nom.",
+      "Le matricule renseigné est invalide ou manquant. Merci de vérifier votre saisie.",
       400
     );
   }
 
   if (response.status === 503) {
     throw new ParentApiError(
-      "Le système est en cours de chargement des relevés de notes. Veuillez patienter un instant et réessayez.",
+      "Le service des notes est temporairement en cours d'actualisation. Veuillez patienter un instant et réessayez.",
       503
     );
   }
 
   if (!response.ok) {
     throw new ParentApiError(
-      `Une erreur est survenue lors de la récupération des notes (Code ${response.status}).`,
+      "Une erreur est survenue lors de la récupération des notes. Veuillez réessayer ultérieurement.",
       response.status
     );
   }
 
-  const payload: ParentApiResponse = await response.json();
+  let payload: ParentApiResponse;
+  try {
+    payload = await response.json();
+  } catch {
+    throw new ParentApiError(
+      "Format de réponse inattendu. Veuillez réessayer ultérieurement.",
+      500
+    );
+  }
 
   if (!payload.success || !payload.data) {
     throw new ParentApiError(
