@@ -16,14 +16,14 @@ interface EvalColumnDef {
 }
 
 const ALL_EVAL_COLUMNS: EvalColumnDef[] = [
-  { key: "interro1", label: "Interro 1", shortLabel: "Int. 1", mobileLabel: "Int. 1" },
-  { key: "interro2", label: "Interro 2", shortLabel: "Int. 2", mobileLabel: "Int. 2" },
-  { key: "interro3", label: "Interro 3", shortLabel: "Int. 3", mobileLabel: "Int. 3" },
-  { key: "interro4", label: "Interro 4", shortLabel: "Int. 4", mobileLabel: "Int. 4" },
-  { key: "interro5", label: "Interro 5", shortLabel: "Int. 5", mobileLabel: "Int. 5" },
-  { key: "moyenneInterro", label: "Moy. Interros", shortLabel: "Moy. Int.", mobileLabel: "Moy. Int." },
-  { key: "devoir1", label: "Devoir 1", shortLabel: "Dev. 1", mobileLabel: "Dev. 1" },
-  { key: "devoir2", label: "Devoir 2", shortLabel: "Dev. 2", mobileLabel: "Dev. 2" },
+  { key: "interro1", label: "Interro 1", shortLabel: "Interro 1", mobileLabel: "Interro 1" },
+  { key: "interro2", label: "Interro 2", shortLabel: "Interro 2", mobileLabel: "Interro 2" },
+  { key: "interro3", label: "Interro 3", shortLabel: "Interro 3", mobileLabel: "Interro 3" },
+  { key: "interro4", label: "Interro 4", shortLabel: "Interro 4", mobileLabel: "Interro 4" },
+  { key: "interro5", label: "Interro 5", shortLabel: "Interro 5", mobileLabel: "Interro 5" },
+  { key: "moyenneInterro", label: "Moy. Interros", shortLabel: "Moy. Interro", mobileLabel: "Moy. Int." },
+  { key: "devoir1", label: "Devoir 1", shortLabel: "Devoir 1", mobileLabel: "Devoir 1" },
+  { key: "devoir2", label: "Devoir 2", shortLabel: "Devoir 2", mobileLabel: "Devoir 2" },
   { key: "composition", label: "Composition", shortLabel: "Compo", mobileLabel: "Compo" },
 ];
 
