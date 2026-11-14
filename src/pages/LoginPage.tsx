@@ -202,7 +202,7 @@ export default function LoginPage() {
 
       {/* Pied de page discret */}
       <footer className="text-center text-xs text-slate-500 py-6 relative z-10 border-t border-slate-200/80 bg-white/50">
-        &copy; {new Date().getFullYear()} Collège Catholique Saint Charles Borromée — Tous droits réservés.
+        &copy; {new Date().getFullYear()} Collège Catholique Saint Charles Borromée — Tous droits réservés. - By BIGDATA CENTER & AI
       </footer>
     </div>
   );

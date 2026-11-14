@@ -130,7 +130,7 @@ export default function Footer() {
 
         <p className="pt-8 text-xs text-white/40 text-center">
           © {new Date().getFullYear()} Collège Catholique Saint Charles
-          Borromée — Douala, Cameroun. Tous droits réservés.
+          Borromée — Douala, Cameroun. Tous droits réservés. - By BIGDATA CENTER & AI
         </p>
       </div>
     </footer>
