@@ -92,7 +92,7 @@ export default function NotesFamilySection({
                   {col.shortLabel}
                 </th>
               ))}
-
+            
               <th className="py-3.5 px-4 text-center font-bold text-navy-deep bg-blue-50/50">
                 Moy. Générale
               </th>

@@ -23,7 +23,7 @@ export interface SearchHistoryItem {
  * Détermine si une note est réellement disponible (non nulle, non indéfinie et non vide).
  */
 export const isNoteAvailable = (val: unknown): val is number => {
-  if (val === null || val === undefined || val === "") {
+  if (val === null || val === undefined || val === "" || val == 0) {
     return false;
   }
   return !Number.isNaN(Number(val));
